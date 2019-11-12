@@ -2,7 +2,7 @@
  * Example CLI interface for multiple functions.
  */
 
-#include <simpleREPL.h>
+#include <userIO.h>
 
 
 string hi(void) {

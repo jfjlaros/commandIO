@@ -1,5 +1,5 @@
-#ifndef SIMPLE_REPL_IO_TCC_
-#define SIMPLE_REPL_IO_TCC_
+#ifndef USERIO_IO_TCC_
+#define USERIO_IO_TCC_
 
 #include <iostream>
 

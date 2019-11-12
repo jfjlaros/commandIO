@@ -1,5 +1,5 @@
-Simple REPL for C++
-===================
+Simple userIO for C++
+=====================
 
 This library provides a simple way to expose any C/C++ function in a
 `Read-eval-print loop`_ (REPL) interactive environment.

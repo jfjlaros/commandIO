@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "../../src/simpleREPL.h"
+#include <userIO.h>
 
 
 int main(void) {

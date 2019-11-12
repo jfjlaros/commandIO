@@ -2,7 +2,7 @@
  * Example CLI interface for one function.
  */
 
-#include <simpleREPL.h>
+#include <userIO.h>
 
 
 int sequence(int a, int b, int n) {

@@ -1,5 +1,5 @@
-#ifndef SIMPLE_REPL_INTERFACE_TCC_
-#define SIMPLE_REPL_INTERFACE_TCC_
+#ifndef USERIO_INTERFACE_TCC_
+#define USERIO_INTERFACE_TCC_
 
 /**
  * @file interface.tcc
@@ -25,7 +25,7 @@ RWIO IO;
 
 
 /**
- * REPL interface.
+ * Interface.
  *
  * This function expects parameter pairs (function pointer, name).
  *
