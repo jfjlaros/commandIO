@@ -4,7 +4,7 @@
 /**
  * @file eval.tcc
  *
- * Read values from stdin, execute a function and write the result to stdout.
+ * Collect parameter values, execute a function and write the result.
  */
 
 #include "tuple.tcc"
@@ -23,46 +23,58 @@
  * @private
  */
 template <VMEMB_T, class... Args>
-void _call(void (*)(void), VMEMB t, Tuple<>&, Args&... args) {
-  (*t.head.*t.tail.head)(args...);
+void _call(void (*)(void), VMEMB m, Tuple<>&, Args&... args) {
+  (*m.head.*m.tail.head)(args...);
 }
 
-template <class... Tail, class... Args>
-void _call(void (*)(void), void (*f)(Tail...), Tuple<>&, Args&... args) {
+/// @private Void function.
+template <class... FArgs, class... Args>
+void _call(void (*)(void), void (*f)(FArgs...), Tuple<>&, Args&... args) {
   f(args...);
 }
 
+/// @private Class member function.
 template <TMEMB_T, class... Args>
-void _call(void (*)(void), TMEMB t, Tuple<>&, Args&... args) {
-  IO.write((*t.head.*t.tail.head)(args...), "\n");
+void _call(void (*)(void), TMEMB m, Tuple<>&, Args&... args) {
+  IO.write((*m.head.*m.tail.head)(args...), "\n");
 }
 
+/// @private Normal function.
 template <class F, class... Args>
 void _call(void (*)(void), F f, Tuple<>&, Args&... args) {
   IO.write(f(args...), "\n");
 }
 
+
+/**
+ * Parameter collection.
+ */
 template <class H, class... Tail, class F, class U, class... Args>
 void _call(void (*f_)(H, Tail...), F f, U& argv, Args&... args) {
   _call((void (*)(Tail...))f_, f, argv.tail, args..., argv.head);
 }
 
+
+/**
+ * Set up parameter collection.
+ */
 template <TMEMB_T, class U>
-void call(TMEMB t, U& argv) {
-  _call((void (*)(Tail...))t.head, t, argv);
+void call(TMEMB m, U& argv) {
+  _call((void (*)(FArgs...))m.head, m, argv);
 }
 
-template <class R, class... Tail, class U>
-void call(R (*f)(Tail...), U& argv) {
-  _call((void (*)(Tail...))f, f, argv);
+/// @private Normal function.
+template <class R, class... FArgs, class U>
+void call(R (*f)(FArgs...), U& argv) {
+  _call((void (*)(FArgs...))f, f, argv);
 }
 
 
-/*
+/**
  * Parse command line parameters.
  */
-template <class F, class U, class V>
-bool _parse(F f, U& defs, V& argv) {
+template <class F, class D, class A>
+bool _parse(F f, D& defs, A& argv) {
   string token = "";
   int req,
       opt,
@@ -86,7 +98,7 @@ bool _parse(F f, U& defs, V& argv) {
     }
   }
 
-  countArgs(defs, req, opt);
+  countArgs(req, opt, defs);
 
   if (number < req) {
     IO.write("Required parameter missing.\n");
@@ -98,16 +110,16 @@ bool _parse(F f, U& defs, V& argv) {
   return true;
 }
 
-template <TMEMB_T, class U>
-bool parse(TMEMB t, U defs) {
-  Tuple<Tail...> argv;
+template <TMEMB_T, class D>
+bool parse(TMEMB m, D defs) {
+  Tuple<FArgs...> argv;
 
-  return _parse(t, defs, argv);
+  return _parse(m, defs, argv);
 }
 
-template <class R, class... Tail, class U>
-bool parse(R (*f)(Tail...), U defs) {
-  Tuple<Tail...> argv;
+template <class R, class... FArgs, class U>
+bool parse(R (*f)(FArgs...), U defs) {
+  Tuple<FArgs...> argv;
 
   return _parse(f, defs, argv);
 }
@@ -116,14 +128,14 @@ bool parse(R (*f)(Tail...), U defs) {
 /*
  * Select a function to be executed.
  */
-inline bool select(string s) {
-  IO.write("Unknown command: ", s, "\n");
+inline bool select(string name) {
+  IO.write("Unknown command: ", name, "\n");
   IO.flush();
   return false;
 }
 
-template <class T, class... Args>
-bool select(string name, T t, Args... args) {
+template <class H, class... Args>
+bool select(string name, H t, Args... args) {
   if (t.tail.head == name) {
     return parse(t.head, t.tail.tail.tail);
   }

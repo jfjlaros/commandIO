@@ -33,6 +33,7 @@ string RWIO::read(void) {
       c = getc(stdin);
 
       if (feof(stdin)) {
+        write("\n");
         return "exit";
       }
     }
@@ -41,10 +42,12 @@ string RWIO::read(void) {
 
     return data;
   }
+  else if (!eol()) {
+    _number++;
+    data = _argv[_number];
+  }
 
-  _number++;
-
-  return _argv[_number];
+  return data;
 }
 
 /*
@@ -75,7 +78,7 @@ void RWIO::enableCLI(int argc, char** argv) {
 }
 
 void RWIO::flush(void) {
-  while (!_endOfLine) {
+  while (!eol()) {
     read();
   }
 }

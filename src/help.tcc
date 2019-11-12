@@ -5,7 +5,6 @@
 #include "types.tcc"
 #include "tuple.tcc"
 
-#define LISTHELP "Show available commands.\n"
 #define HELPHELP "Help on a specific command.\n"
 #define EXITHELP "Exit.\n"
 
@@ -16,18 +15,18 @@
 inline void _helpRequired(void (*)(void), Tuple<>&) {}
 
 template <class H, class... Tail, PARG_T>
-void _helpRequired(void (*f)(H, Tail...), PARG& argv) {
+void _helpRequired(void (*f)(H, Tail...), PARG& defs) {
   H data;
 
   IO.write(
-    "  ", argv.head.head, "\t\t", argv.head.tail.head, " (type ",
+    "  ", defs.head.head, "\t\t", defs.head.tail.head, " (type ",
     _typeof(data), ")\n");
-  _helpRequired((void (*)(Tail...))f, argv.tail);
+  _helpRequired((void (*)(Tail...))f, defs.tail);
 }
 
-template <class H, class... Tail, class U>
-void _helpRequired(void (*f)(H, Tail...), U& argv) {
-  _helpRequired((void (*)(Tail...))f, argv.tail);
+template <class H, class... Tail, class D>
+void _helpRequired(void (*f)(H, Tail...), D& defs) {
+  _helpRequired((void (*)(Tail...))f, defs.tail);
 }
 
 
@@ -37,36 +36,36 @@ void _helpRequired(void (*f)(H, Tail...), U& argv) {
 inline void _helpOptional(void (*)(void), Tuple<>&) {}
 
 template <class H, class... Tail, PARG_T>
-void _helpOptional(void (*f)(H, Tail...), PARG& argv) {
-  _helpOptional((void (*)(Tail...))f, argv.tail);
+void _helpOptional(void (*f)(H, Tail...), PARG& defs) {
+  _helpOptional((void (*)(Tail...))f, defs.tail);
 }
 
-template <class... Tail, class A>
-void _helpOptional(void (*f)(bool, Tail...), A& argv) {
+template <class... Tail, class D>
+void _helpOptional(void (*f)(bool, Tail...), D& defs) {
   IO.write(
-    "  ", argv.head.head, "\t\t", argv.head.tail.tail.head, " (type flag)\n");
-  _helpOptional((void (*)(Tail...))f, argv.tail);
+    "  ", defs.head.head, "\t\t", defs.head.tail.tail.head, " (type flag)\n");
+  _helpOptional((void (*)(Tail...))f, defs.tail);
 }
 
-template <class H, class... Tail, class A>
-void _helpOptional(void (*f)(H, Tail...), A& argv) {
+template <class H, class... Tail, class D>
+void _helpOptional(void (*f)(H, Tail...), D& defs) {
   H data;
 
   IO.write(
-    "  ", argv.head.head, "\t\t", argv.head.tail.tail.head, " (type ",
-    _typeof(data), ", default: ", argv.head.tail.head, ")\n");
-  _helpOptional((void (*)(Tail...))f, argv.tail);
+    "  ", defs.head.head, "\t\t", defs.head.tail.tail.head, " (type ",
+    _typeof(data), ", default: ", defs.head.tail.head, ")\n");
+  _helpOptional((void (*)(Tail...))f, defs.tail);
 }
 
 
 /*
  * Help on return type.
  */
-template <class... Tail>
-void returnType(void (*)(Tail...)) {}
+template <class... FArgs>
+void returnType(void (*)(FArgs...)) {}
 
-template <class R, class... Tail>
-void returnType(R (*)(Tail...)) {
+template <class R, class... FArgs>
+void returnType(R (*)(FArgs...)) {
   R data;
 
   IO.write("\nreturns:\n  ", _typeof(data), "\n");
@@ -76,79 +75,87 @@ void returnType(R (*)(Tail...)) {
 /*
  * Help.
  */
-template <class R, class... Tail, class A>
-void help(R (*f)(Tail...), string name, string descr, A& argv) {
+template <class R, class... FArgs, class D>
+void help(R (*f)(FArgs...), string name, string descr, D& defs) {
   int req,
       opt;
 
   IO.write(name, ": ", descr, "\n");
 
-  countArgs(argv, req, opt);
+  countArgs(req, opt, defs);
 
   if (req) {
     IO.write("\npositional arguments:\n");
-    _helpRequired((void (*)(Tail...))f, argv);
+    _helpRequired((void (*)(FArgs...))f, defs);
   }
 
   if (opt) {
     IO.write("\noptional arguments:\n");
-    _helpOptional((void (*)(Tail...))f, argv);
+    _helpOptional((void (*)(FArgs...))f, defs);
   }
 
   returnType(f);
 }
 
-template <TMEMB_T, class A>
-void help(TMEMB t, string name, string descr, A& argv) {
-  help((R (*)(Tail...))t.tail.head, name, descr, argv);
+template <TMEMB_T, class D>
+void help(TMEMB m, string name, string descr, D& defs) {
+  help((R (*)(FArgs...))m.tail.head, name, descr, defs);
 }
 
 
 /*
  * Help selector.
  */
-inline void selectHelp(string s) {
-  if (s == "list") {
-    IO.write(s, ": ", LISTHELP);
-  }
-  else if (s == "help") {
+inline bool selectHelp(string name) {
+  bool result = true;
+
+  if (name == "help") {
     IO.write(
-      s, ": ", HELPHELP, "\npositional arguments:\n",
+      name, ": ", HELPHELP, "\npositional arguments:\n",
       "  name\t\tcommand name (type string)\n");
   }
-  else if (s == "exit") {
-    IO.write(s, ": ", EXITHELP);
+  else if (name == "exit") {
+    IO.write(name, ": ", EXITHELP);
   }
   else {
-    IO.write("Unknown command: ", s, "\n");
+    IO.write("Unknown command: ", name, "\n");
+    result = false;
   }
+
   IO.flush();
+
+  return result;
 }
 
 template <class H, class... Tail>
-void selectHelp(string name, H t, Tail... args) {
+bool selectHelp(string name, H t, Tail... args) {
   if (t.tail.head == name) {
     help(t.head, t.tail.head, t.tail.tail.head, t.tail.tail.tail);
-    return;
+    return true;
   }
 
-  selectHelp(name, args...);
+  return selectHelp(name, args...);
 }
 
 
 /*
  * Short description of all available functions.
  */
-inline void describe(void) {
-  IO.write(
-    "  list\t\t", LISTHELP, "  help\t\t", HELPHELP, "  exit\t\t", EXITHELP);
+inline void _describe(void) {
+  IO.write("  help\t\t", HELPHELP, "  exit\t\t", EXITHELP);
   IO.flush();
 }
 
 template <class H, class... Tail>
-void describe(H t, Tail... args) {
+void _describe(H t, Tail... args) {
   IO.write("  ", t.tail.head, "\t\t", t.tail.tail.head, "\n");
-  describe(args...);
+  _describe(args...);
+}
+
+template <class... Args>
+void describe(Args... args) {
+  IO.write("Available commands:\n");
+  _describe(args...);
 }
 
 #endif

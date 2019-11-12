@@ -37,8 +37,8 @@ RWIO IO;
  *
  * @return @a true to continue @a false to quit.
  */
-template <class F, class... Args>
-bool interface(F f, const char* name, const char* descr, Args... defs) {
+template <class F, class T, class... Args>
+bool interface(F f, T name, const char* descr, Args... defs) {
   Tuple<Args...> t = pack(defs...);
 
   if (!parse(f, t)) {
@@ -62,22 +62,16 @@ bool interface(Args... args) {
   if (command == "exit") {
     return false;
   }
-  if (command == "list") {
-    IO.write("Available commands:\n");
-    describe(args...);
-    return true;
-  }
   if (command == "help") {
-    if (!IO.eol()) {
-      selectHelp(IO.read(), args...);
-    }
-    else {
-      IO.err("Please provide a command.\n");
+    if (IO.eol() || !selectHelp(IO.read(), args...)) {
+      describe(args...);
     }
     return true;
   }
 
-  select(command, args...);
+  if (!select(command, args...)) {
+    describe(args...);
+  }
 
   return true;
 }

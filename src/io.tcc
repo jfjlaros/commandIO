@@ -22,8 +22,8 @@ class RWIO {
          write(void) {}
     template <class... Args>
       void err(Args...);
-    template <class T, class... Args>
-      void write(T, Args...);
+    template <class H, class... Tail>
+      void write(H, Tail...);
   private:
     int _argc,
         _number = 0;
@@ -62,8 +62,8 @@ void RWIO::err(Args... args) {
 /*
  *
  */
-template <class T, class... Args>
-void RWIO::write(T data, Args... args) {
+template <class H, class... Tail>
+void RWIO::write(H data, Tail... args) {
   cout << data;
   write(args...);
 }
