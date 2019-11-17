@@ -1,8 +1,10 @@
 #include "io.tcc"
 
 
-/*
+/**
+ * Read one string.
  *
+ * @return A string.
  */
 string RWIO::read(void) {
   string data = "";
@@ -50,8 +52,10 @@ string RWIO::read(void) {
   return data;
 }
 
-/*
+/**
+ * Check whether a line ending was encountered.
  *
+ * @return `true` if a line ending was encountered, `false` otherwise.
  */
 bool RWIO::eol(void) {
   if (_interactive) {
@@ -61,15 +65,20 @@ bool RWIO::eol(void) {
   return _number >= _argc - 1;
 }
 
-/*
+/**
+ * Check whether interactive (REPL) mode was set.
  *
+ * @return `true` if interactive mode was set, `false` otherwise.
  */
 bool RWIO::interactive(void) {
   return _interactive;
 }
 
-/*
+/**
+ * Enable the command line interface (CLI) mode.
  *
+ * @param argc The number of arguments in `argv`.
+ * @param argv Array of arguments.
  */
 void RWIO::enableCLI(int argc, char** argv) {
   _interactive = false;
@@ -77,6 +86,9 @@ void RWIO::enableCLI(int argc, char** argv) {
   _argv = argv;
 }
 
+/**
+ * Flush the input.
+ */
 void RWIO::flush(void) {
   while (!eol()) {
     read();
@@ -85,8 +97,9 @@ void RWIO::flush(void) {
 
 
 /*
- *
+ * Conversion functions.
  */
+
 void _convert(bool* data, string s) {
   *data = (bool)stoi(s);
 }

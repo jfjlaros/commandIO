@@ -1,12 +1,6 @@
 #ifndef USERIO_TUPLE_TCC_
 #define USERIO_TUPLE_TCC_
 
-/**
- * @file tuple.tcc
- *
- * @a Tuple and @a Object definitions and manipulation functions.
- */
-
 #define VMEMB_T class C, class P, class... FArgs
 #define VMEMB Tuple<C*, void (P::*)(FArgs...)>
 
@@ -14,16 +8,14 @@
 #define TMEMB Tuple<C*, R (P::*)(FArgs...)>
 
 /**
- * Empty tuple.
+ * Tuple.
  *
- * @private
+ * \struct Tuple
  */
 template <class... Args>
 struct Tuple {};
 
-/**
- * Nested tuple.
- */
+// Full definition.
 template <class H, class... Tail>
 struct Tuple<H, Tail...> {
   H head;              ///< First element.
@@ -32,11 +24,11 @@ struct Tuple<H, Tail...> {
 
 
 /**
- * Make a nested tuple from a list of parameters.
+ * Make a tuple from a list of parameters.
  *
- * @param args Values to store in a nested tuple.
+ * \param args Values to store in a tuple.
  *
- * @return Nested tuple containing @a args.
+ * \return Tuple containing `args`.
  */
 template <class... Args>
 Tuple<Args...> pack(Args... args) {

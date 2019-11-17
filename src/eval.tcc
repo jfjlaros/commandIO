@@ -1,80 +1,93 @@
 #ifndef USERIO_EVAL_TCC_
 #define USERIO_EVAL_TCC_
 
-/**
- * @file eval.tcc
- *
- * Collect parameter values, execute a function and write the result.
- */
+/// \defgroup eval
 
 #include "tuple.tcc"
 
 
-/**
- * Execute a function.
+/*
+ * Recursion terminators.
  *
- * All parameters have been collected since function pointer @a *f_ has no
- * parameter types. All values are now present in the @a args parameter pack.
- *
- * @param - Dummy function pointer.
- * @param f Function pointer.
- * @param args Parameter pack for @a f.
- *
- * @private
+ * All parameters have been collected. All values are now present in the `args`
+ * parameter pack.
  */
+
+// Void class member function.
 template <VMEMB_T, class... Args>
-void _call(void (*)(void), VMEMB m, Tuple<>&, Args&... args) {
+void _call(VMEMB& m, Tuple<>&, Args&... args) {
   (*m.head.*m.tail.head)(args...);
 }
 
-/// @private Void function.
+// Void function.
 template <class... FArgs, class... Args>
-void _call(void (*)(void), void (*f)(FArgs...), Tuple<>&, Args&... args) {
+void _call(void (*f)(FArgs...), Tuple<>&, Args&... args) {
   f(args...);
 }
 
-/// @private Class member function.
+// Class member function that returns a value.
 template <TMEMB_T, class... Args>
-void _call(void (*)(void), TMEMB m, Tuple<>&, Args&... args) {
+void _call(TMEMB& m, Tuple<>&, Args&... args) {
   IO.write((*m.head.*m.tail.head)(args...), "\n");
 }
 
-/// @private Normal function.
+// Function that returns a value.
 template <class F, class... Args>
-void _call(void (*)(void), F f, Tuple<>&, Args&... args) {
+void _call(F f, Tuple<>&, Args&... args) {
   IO.write(f(args...), "\n");
 }
 
 
-/**
+/*
  * Parameter collection.
+ *
+ * The first member of the tuple `argv` is added to the parameter pack `args`.
  */
-template <class H, class... Tail, class F, class U, class... Args>
-void _call(void (*f_)(H, Tail...), F f, U& argv, Args&... args) {
-  _call((void (*)(Tail...))f_, f, argv.tail, args..., argv.head);
+template <class F, class A, class... Args>
+void _call(F f, A& argv, Args&... args) {
+  _call(f, argv.tail, args..., argv.head);
 }
 
 
 /**
- * Set up parameter collection.
+ * Call a class member function.
+ *
+ * \ingroup eval
+ *
+ * \param m Tuple containing pointers to a class instance and a class member
+ *   function.
+ * \param argv Tuple containing arguments.
  */
-template <TMEMB_T, class U>
-void call(TMEMB m, U& argv) {
-  _call((void (*)(FArgs...))m.head, m, argv);
+template <TMEMB_T, class A>
+void call(TMEMB& m, A& argv) {
+  _call(m, argv);
 }
 
-/// @private Normal function.
-template <class R, class... FArgs, class U>
-void call(R (*f)(FArgs...), U& argv) {
-  _call((void (*)(FArgs...))f, f, argv);
+/**
+ * Call a function.
+ *
+ * \ingroup eval
+ *
+ * \param f Function pointer.
+ * \param argv Tuple containing arguments.
+ */
+template <class F, class A>
+void call(F f, A& argv) {
+  _call(f, argv);
 }
 
 
 /**
- * Parse command line parameters.
+ * Set defaults, collect parameters, do sanity checking and call a function.
+ *
+ * \param f Function pointer or Tuple for class member functions.
+ * \param argv Tuple containing arguments.
+ * \param defs Parameter definitions.
+ *
+ * \return `true` on success, `false` otherwise.
  */
-template <class F, class D, class A>
-bool _parse(F f, D& defs, A& argv) {
+template <class F, class A, class D>
+bool _parse(F f, A& argv, D& defs) {
   string token = "";
   int req,
       opt,
@@ -110,23 +123,53 @@ bool _parse(F f, D& defs, A& argv) {
   return true;
 }
 
+/**
+ * Parse user input and call a class member function.
+ *
+ * \ingroup eval
+ *
+ * \param m Tuple containing pointers to a class instance and a class member
+ *   function.
+ * \param defs Parameter definitions.
+ *
+ * \return `true` on success, `false` otherwise.
+ */
 template <TMEMB_T, class D>
-bool parse(TMEMB m, D defs) {
+bool parse(TMEMB& m, D& defs) {
   Tuple<FArgs...> argv;
 
-  return _parse(m, defs, argv);
+  return _parse(m, argv, defs);
 }
 
-template <class R, class... FArgs, class U>
-bool parse(R (*f)(FArgs...), U defs) {
+/**
+ * Parse user input and call a function.
+ *
+ * \ingroup eval
+ *
+ * \param f Function pointer.
+ * \param defs Parameter definitions.
+ *
+ * \return `true` on success, `false` otherwise.
+ */
+template <class R, class... FArgs, class D>
+bool parse(R (*f)(FArgs...), D& defs) {
   Tuple<FArgs...> argv;
 
-  return _parse(f, defs, argv);
+  return _parse(f, argv, defs);
 }
 
 
-/*
- * Select a function to be executed.
+/**
+ * Select a function for parsing.
+ *
+ * \fn select(string, H, Args...)
+ * \ingroup eval
+ *
+ * \param name Command name.
+ * \param t Function definition under consideration.
+ * \param args Remaining function definitions.
+ *
+ * \return `true` on success, `false` otherwise.
  */
 inline bool select(string name) {
   IO.write("Unknown command: ", name, "\n");
@@ -134,6 +177,7 @@ inline bool select(string name) {
   return false;
 }
 
+// Entry point.
 template <class H, class... Args>
 bool select(string name, H t, Args... args) {
   if (t.tail.head == name) {

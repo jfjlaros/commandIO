@@ -1,14 +1,10 @@
 #ifndef USERIO_TYPES_TCC_
 #define USERIO_TYPES_TCC_
 
-/**
- * Type analysis and naming.
- */
-
-
 /*
  * Type naming functions.
  */
+
 inline string _typeof(bool) {
   return "bool";
 }
@@ -69,8 +65,20 @@ inline string _typeof(long double) {
   return "long double";
 }
 
-inline string _typeof(string) {
+inline string _typeof(string&) {
   return "string";
+}
+
+/**
+ * Determine the type of a variable.
+ *
+ * \param data Data.
+ *
+ * \return Type of `data`.
+ */
+template <class T>
+string typeof(T& data) {
+  return _typeof(data);
 }
 
 #endif

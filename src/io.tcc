@@ -8,8 +8,8 @@
 
 using namespace std;
 
-/*
- *
+/**
+ * User input and output.
  */
 class RWIO {
   public:
@@ -50,8 +50,10 @@ void _convert(bool*, string),
      _convert(string*, string);
 
 
-/*
+/**
+ * Write an error message and flush the input.
  *
+ * \param args Message.
  */
 template <class... Args>
 void RWIO::err(Args... args) {
@@ -59,8 +61,10 @@ void RWIO::err(Args... args) {
   flush();
 }
 
-/*
+/**
+ * Write a message.
  *
+ * \param args Message.
  */
 template <class H, class... Tail>
 void RWIO::write(H data, Tail... args) {
@@ -69,6 +73,14 @@ void RWIO::write(H data, Tail... args) {
 }
 
 
+/**
+ * Convert a string to any type.
+ *
+ * \param data Result of the conversion.
+ * \param s Input of the conversion.
+ *
+ * \return `true` if the conversion was successful, `false` otherwise.
+ */
 template <class T>
 bool convert(T* data, string s) {
   try {

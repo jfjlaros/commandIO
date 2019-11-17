@@ -1,41 +1,31 @@
 #ifndef USERIO_INTERFACE_TCC_
 #define USERIO_INTERFACE_TCC_
 
-/**
- * @file interface.tcc
- *
- * Template library for exporting native C and C++ functions as remote
- * procedure calls.
- *
- * For more information about (variadic) templates:
- * @li http://www.drdobbs.com/cpp/extracting-function-parameter-and-return/240000586
- * @li https://eli.thegreenplace.net/2014/variadic-templates-in-c/
- * @li https://en.cppreference.com/w/cpp/language/parameter_pack
- */
+/// \defgroup interface
 
 #include "args.tcc"
 #include "eval.tcc"
 #include "help.tcc"
 #include "io.tcc"
 
-#define param(args...) pack(args)
-#define func(args...) pack(args)
+#define param(args...) pack(args) ///< Container for parameter definition.
+#define func(args...) pack(args)  ///< Container for function definition.
 
-RWIO IO;
+RWIO IO;                          ///< User input and output.
+
 
 
 /**
- * Interface.
+ * Build a user interface for one function.
  *
- * This function expects parameter pairs (function pointer, name).
+ * \ingroup interface
  *
- * A command is read from stdin into @a command, if the value equals @a help,
- * we describe the list of functions. Otherwise, we call the function indexed
- * by @a command.
+ * \param f Function pointer.
+ * \param name Command name.
+ * \param descr Command description.
+ * \param defs Parameter definitions.
  *
- * @param args Parameter pairs (function pointer, name).
- *
- * @return @a true to continue @a false to quit.
+ * \return `true` to continue `false` to quit.
  */
 template <class F, class T, class... Args>
 bool interface(F f, T name, const char* descr, Args... defs) {
@@ -48,7 +38,13 @@ bool interface(F f, T name, const char* descr, Args... defs) {
   return true;
 }
 
-
+/**
+ * Build a user interface for multiple functions.
+ *
+ * \ingroup interface
+ *
+ * \param args Function definitions.
+ */
 template <class... Args>
 bool interface(Args... args) {
   string command;
