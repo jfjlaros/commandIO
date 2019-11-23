@@ -5,6 +5,7 @@
 
 #include "io.tcc"
 #include "tuple.tcc"
+#include "types.tcc"
 
 extern RWIO IO;
 

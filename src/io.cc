@@ -1,5 +1,48 @@
 #include "io.tcc"
 
+string RWIO::_readCLI(void) {
+  _number++;
+
+  return _argv[_number];
+}
+
+string RWIO::_readREPL(void) {
+  string data = "";
+  bool quoted = false;
+  char c = ' ';
+
+  _endOfLine = false;
+
+  while (c == ' ' || c == '\t') {
+    c = getc(stdin);
+  }
+
+  while (c != '\n') {
+    if (!quoted && (c == ' ' || c == '\t')) {
+      return data;
+    }
+    else if (c == '\\') {
+      data += getc(stdin);
+    }
+    else if (c == '"') {
+      quoted = !quoted;
+    }
+    else {
+      data += c;
+    }
+
+    c = getc(stdin);
+
+    if (feof(stdin)) {
+      write("\n");
+      return "exit";
+    }
+  }
+
+  _endOfLine = true;
+
+  return data;
+}
 
 /**
  * Read one string.
@@ -7,49 +50,10 @@
  * @return A string.
  */
 string RWIO::read(void) {
-  string data = "";
-  bool quoted = false;
-  char c = ' ';
-
   if (_interactive) {
-    _endOfLine = false;
-
-    while (c == ' ' || c == '\t') {
-      c = getc(stdin);
-    }
-
-    while (c != '\n') {
-      if (!quoted && (c == ' ' || c == '\t')) {
-        return data;
-      }
-      else if (c == '\\') {
-        data += getc(stdin);
-      }
-      else if (c == '"') {
-        quoted = !quoted;
-      }
-      else {
-        data += c;
-      }
-
-      c = getc(stdin);
-
-      if (feof(stdin)) {
-        write("\n");
-        return "exit";
-      }
-    }
-
-    _endOfLine = true;
-
-    return data;
+    return _readREPL();
   }
-  else if (!eol()) {
-    _number++;
-    data = _argv[_number];
-  }
-
-  return data;
+  return _readCLI();
 }
 
 /**
@@ -93,73 +97,4 @@ void RWIO::flush(void) {
   while (!eol()) {
     read();
   }
-}
-
-
-/*
- * Conversion functions.
- */
-
-void _convert(bool* data, string s) {
-  *data = (bool)stoi(s);
-}
-
-void _convert(char* data, string s) {
-  *data = (char)stoi(s);
-}
-
-void _convert(signed char* data, string s) {
-  *data = (signed char)stoi(s);
-}
-
-void _convert(unsigned char* data, string s) {
-  *data = (unsigned char)stoi(s);
-}
-
-void _convert(short int* data, string s) {
-  *data = (short int)stoi(s);
-}
-
-void _convert(unsigned short int* data, string s) {
-  *data = (unsigned short int)stoi(s);
-}
-
-void _convert(int* data, string s) {
-  *data = stoi(s);
-}
-
-void _convert(unsigned int* data, string s) {
-  *data = (unsigned int)stoi(s);
-}
-
-void _convert(long int* data, string s) {
-  *data = stol(s);
-}
-
-void _convert(unsigned long int* data, string s) {
-  *data = stoul(s);
-}
-
-void _convert(long long int* data, string s) {
-  *data = stoll(s);
-}
-
-void _convert(unsigned long long int* data, string s) {
-  *data = stoull(s);
-}
-
-void _convert(float* data, string s) {
-  *data = stof(s);
-}
-
-void _convert(double* data, string s) {
-  *data = stod(s);
-}
-
-void _convert(long double* data, string s) {
-  *data = stold(s);
-}
-
-void _convert(string* data, string s) {
-  *data = s;
 }
