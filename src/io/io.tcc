@@ -3,9 +3,6 @@
 
 #include <iostream>
 
-#define PARG_T class... Args
-#define PARG Tuple<Tuple<const char*, const char*>, Args...>
-
 using namespace std;
 
 /**

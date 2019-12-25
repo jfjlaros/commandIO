@@ -1,6 +1,10 @@
 #ifndef USERIO_TYPES_TCC_
 #define USERIO_TYPES_TCC_
 
+#define PARG_T class... Args
+#define PARG Tuple<Tuple<const char*, const char*>, Args...>
+
+
 /*
  * Type naming functions.
  */
