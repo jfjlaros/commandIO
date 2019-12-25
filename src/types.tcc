@@ -84,6 +84,12 @@ inline string typeof(string&) {
  *
  * \return `true` if the conversion was successful, `false` otherwise.
  */
+inline bool convert(string* data, string s) {
+  *data = s;
+
+  return true;
+}
+
 template <class T>
 bool convert(T* data, string s) {
   istringstream iss(s);
