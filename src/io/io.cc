@@ -50,7 +50,7 @@ string RWIO::_readREPL(void) {
  * @return A string.
  */
 string RWIO::read(void) {
-  if (_interactive) {
+  if (interactive) {
     return _readREPL();
   }
   return _readCLI();
@@ -62,20 +62,11 @@ string RWIO::read(void) {
  * @return `true` if a line ending was encountered, `false` otherwise.
  */
 bool RWIO::eol(void) {
-  if (_interactive) {
+  if (interactive) {
     return _endOfLine;
   }
 
   return _number >= _argc - 1;
-}
-
-/**
- * Check whether interactive (REPL) mode was set.
- *
- * @return `true` if interactive mode was set, `false` otherwise.
- */
-bool RWIO::interactive(void) {
-  return _interactive;
 }
 
 /**
@@ -85,7 +76,7 @@ bool RWIO::interactive(void) {
  * @param argv Array of arguments.
  */
 void RWIO::enableCLI(int argc, char** argv) {
-  _interactive = false;
+  interactive = false;
   _argc = argc;
   _argv = argv;
 }

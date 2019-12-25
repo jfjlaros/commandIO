@@ -14,8 +14,7 @@ using namespace std;
 class RWIO {
   public:
     RWIO(void) {}
-    bool eol(void),
-         interactive(void);
+    bool eol(void);
     string read(void);
     void enableCLI(int, char**),
          flush(),
@@ -24,14 +23,14 @@ class RWIO {
       void err(Args...);
     template <class H, class... Tail>
       void write(H, Tail...);
+    bool interactive = true;
   private:
     string _readCLI(void),
            _readREPL(void);
     int _argc,
         _number = 0;
     char** _argv;
-    bool _endOfLine = false,
-         _interactive = true;
+    bool _endOfLine = false;
 };
 
 
