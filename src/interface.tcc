@@ -52,7 +52,9 @@ bool interface(Args... args) {
     IO.write("> ");
   }
 
-  command = IO.read();
+  if (!IO.eol() || IO.interactive) {
+    command = IO.read();
+  }
 
   if (command == "exit") {
     return false;
