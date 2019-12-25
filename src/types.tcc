@@ -1,6 +1,8 @@
 #ifndef USERIO_TYPES_TCC_
 #define USERIO_TYPES_TCC_
 
+#include <sstream>
+
 #define PARG_T class... Args
 #define PARG Tuple<Tuple<const char*, const char*>, Args...>
 
@@ -74,74 +76,6 @@ inline string typeof(string&) {
 }
 
 
-/*
- * Conversion functions.
- */
-
-void _convert(bool* data, string s) {
-  *data = (bool)stoi(s);
-}
-
-void _convert(char* data, string s) {
-  *data = (char)stoi(s);
-}
-
-void _convert(signed char* data, string s) {
-  *data = (signed char)stoi(s);
-}
-
-void _convert(unsigned char* data, string s) {
-  *data = (unsigned char)stoi(s);
-}
-
-void _convert(short int* data, string s) {
-  *data = (short int)stoi(s);
-}
-
-void _convert(unsigned short int* data, string s) {
-  *data = (unsigned short int)stoi(s);
-}
-
-void _convert(int* data, string s) {
-  *data = stoi(s);
-}
-
-void _convert(unsigned int* data, string s) {
-  *data = (unsigned int)stoi(s);
-}
-
-void _convert(long int* data, string s) {
-  *data = stol(s);
-}
-
-void _convert(unsigned long int* data, string s) {
-  *data = stoul(s);
-}
-
-void _convert(long long int* data, string s) {
-  *data = stoll(s);
-}
-
-void _convert(unsigned long long int* data, string s) {
-  *data = stoull(s);
-}
-
-void _convert(float* data, string s) {
-  *data = stof(s);
-}
-
-void _convert(double* data, string s) {
-  *data = stod(s);
-}
-
-void _convert(long double* data, string s) {
-  *data = stold(s);
-}
-
-void _convert(string* data, string s) {
-  *data = s;
-}
-
 /**
  * Convert a string to any type.
  *
@@ -152,13 +86,11 @@ void _convert(string* data, string s) {
  */
 template <class T>
 bool convert(T* data, string s) {
-  try {
-    _convert(data, s);
-  }
-  catch (std::invalid_argument) {
-    return false;
-  }
-  return true;
+  istringstream iss(s);
+
+  iss >> *data;
+
+  return !iss.fail();
 }
 
 #endif
