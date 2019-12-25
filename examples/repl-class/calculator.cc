@@ -1,20 +1,20 @@
-#include <userIO.h>
+#include <commandIO.h>
 
 
 class Calculator {
   public:
     Calculator(void) {}
-    void add(int a) {
-      _state += a;
+    void add(int amount) {
+      _total += amount;
     }
-    void subtract(int a) {
-      _state -= a;
+    void subtract(int amount) {
+      _total -= amount;
     }
     int show(void) {
-      return _state;
+      return _total;
     }
   private:
-    int _state = 0;
+    int _total = 0;
 };
 
 
@@ -22,11 +22,11 @@ int main(void) {
   Calculator calc;
 
   while (interface(
-    func(pack(&calc, &Calculator::add), "add", "Add something.",
-      param("a", "a")),
-    func(pack(&calc, &Calculator::subtract), "sub", "Subtract something.",
-      param("a", "a")),
-    func(pack(&calc, &Calculator::show), "show", "Show result.")));
+    func(pack(&calc, &Calculator::add), "add", "Increase the total.",
+      param("amount", "increase by this amount")),
+    func(pack(&calc, &Calculator::subtract), "sub", "Decrease the total.",
+      param("amount", "decrease by this amount")),
+    func(pack(&calc, &Calculator::show), "show", "Show total.")));
 
   return 0;
 }

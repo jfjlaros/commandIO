@@ -1,8 +1,20 @@
-#include <userIO.h>
+#include <commandIO.h>
 
 
-string greet(string name) {
-  return "Hi " + name + ".";
+string greet(string name, int times, bool shout) {
+  string greeting = "";
+  int i;
+
+  for (i = 0; i < times; i++) {
+    if (shout) {
+      greeting += "HI " + name + "!\n";
+    }
+    else {
+      greeting += "Hi " + name + ".\n";
+    }
+  }
+
+  return greeting;
 }
 
 int increase(int a) {
@@ -17,11 +29,13 @@ float multiply(float a, int b) {
 int main(void) {
   while (interface(
     func(greet, "greet", "Say hi to someone.",
-      param("name", "a name")),
-    func(increase, "inc", "Increase an integer value.",
-      param("value", "a value")),
-    func(multiply, "mul", "Multiply a float with an integer.",
-      param("-a", 1.1F, "float value"),
+      param("name", "someone's name"),
+      param("-t", 1, "greet multiple times"),
+      param("-s", false, "shout")),
+    func(increase, "inc", "Increment a value.",
+      param("value", "value to be incremented")),
+    func(multiply, "mul", "Multiply a floating point number.",
+      param("-a", 1.1F, "value to be multiplied"),
       param("b", "multiplier"))));
 
   return 0;

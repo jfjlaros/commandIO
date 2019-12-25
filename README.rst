@@ -1,8 +1,20 @@
-Simple userIO for C++
-=====================
+commandIO: a CLI and REPL interface generator for C++
+=====================================================
 
 This library provides a simple way to expose any C/C++ function in a
 `Read-eval-print loop`_ (REPL) interactive environment.
+
+**Features:**
+
+- Easy interface definition.
+- Interface support for:
+  - Positional parameters.
+  - Optional parameters with default values.
+  - Flags.
+- Class methods.
+- Automatic parameter- and return type inference.
+- Full help system.
+- Method discovery.
 
 
 Examples
@@ -12,31 +24,84 @@ Demo
 ~~~~
 
 We show how to use simple functions in the demo_ program. In this program we
-export three functions.
+export three functions: `greet`, `inc` and `mul`.
+
+The built in `help` function shows a list of available commands.
 
 ::
 
-    $ ./demo
     > help
-    name (return type: parameter types) ; documentation
+    Available commands:
+      greet         Say hi to someone.
+      inc           Increment a value.
+      mul           Multiply a floating point number.
+      help          Help on a specific command.
+      exit          Exit.
 
-    greet (string: string) ; Say hi to someone.
-    inc (int: int) ; Increase an integer value.
-    mul (float: float int) ; Multiply a float with an integer.
-    help (string:) ; This help message.
-    exit (void:) ; Exit.
+For more information about a specific command, pass the name of a command to
+the `help` function.
 
-These are all functions without any side effect.
+::
+
+    > help greet
+    greet: Say hi to someone.
+
+    positional arguments:
+      name          someone's name (type string)
+
+    optional arguments:
+      -t            greet multiple times (type int, default: 1)
+      -s            shout (type flag)
+
+    returns:
+      string
+
+This particular command has one positional (mandatory) parameter and two
+optional parameters, of which one is a flag.
+
+From the description, we see that we can call the `greet` function by providing
+only one argument as follows.
 
 ::
 
     > greet world
     Hi world.
-    > inc 2
-    3
-    > mul 1.2 3
-    3.6
-    > exit
+
+Stings consisting of multiple words should be quoted.
+
+::
+
+    > greet "Dan the man"
+    Hi Dan the man.
+
+We can override the default value of the optional parameter by adding the `-t`
+option.
+
+::
+
+    > greet -t 3 world
+    Hi world.
+    Hi world.
+    Hi world.
+
+Flags do not take an additional argument.
+
+::
+
+    > greet -t 3 -s world
+    HI world!
+    HI world!
+    HI world!
+
+Optional arguments can be provided in any order.
+
+::
+
+    > greet -s world -t 3
+    HI world!
+    HI world!
+    HI world!
+
 
 Calculator
 ~~~~~~~~~~
@@ -69,6 +134,7 @@ These functions operate on an object.
     > exit
 
 
-.. _demo: https://github.com/jfjlaros/simpleREPL/blob/master/examples/demo/demo.cc
-.. _calculator: https://github.com/jfjlaros/simpleREPL/blob/master/examples/calculator/calculator.cc
+.. _demo: https://github.com/jfjlaros/commandIO/blob/master/examples/repl-basic/demo.cc
+.. _calculator: https://github.com/jfjlaros/commandIO/blob/master/examples/calculator/calculator.cc
+
 .. _Read-eval-print loop: https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop

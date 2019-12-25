@@ -8,3 +8,6 @@
    install
    usage
    credits
+   cli_examples
+   repl_examples
+   api

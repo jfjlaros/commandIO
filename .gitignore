@@ -1,7 +1,7 @@
+*.o
 *.swp
 examples/adventure/adventure
 examples/calculator/calculator
 examples/demo/demo
 examples/math/math
 examples/test/test
-src/*.o

@@ -2,7 +2,7 @@
 #define USERIO_H_
 
 /**
- * @file userIO.h
+ * @file commandIO.h
  */
 
 #include "interface.tcc"

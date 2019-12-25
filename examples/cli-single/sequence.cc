@@ -2,10 +2,12 @@
  * Example CLI interface for one function.
  */
 
-#include <userIO.h>
+#include <commandIO.h>
 
 
 int sequence(int a, int b, int n) {
+  if (n < 0)
+    return -99;
   if (n == 0)
     return a;
   if (n == 1)
