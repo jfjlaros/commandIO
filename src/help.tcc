@@ -3,12 +3,14 @@
 
 /// \defgroup help
 
-#include "io.tcc"
-#include "types.tcc"
+#include <io/io.tcc>
+
 #include "tuple.tcc"
+#include "types.tcc"
 
 #define HELPHELP "Help on a specific command.\n"
 #define EXITHELP "Exit.\n"
+
 
 /**
  * Help on required parameters.
@@ -166,7 +168,7 @@ inline bool selectHelp(string name) {
       name, ": ", HELPHELP, "\npositional arguments:\n",
       "  name\t\tcommand name (type string)\n");
   }
-  else if (IO.interactive() && name == "exit") {
+  else if (IO.interactive && name == "exit") {
     IO.write(name, ": ", EXITHELP);
   }
   else {
@@ -201,7 +203,7 @@ bool selectHelp(string name, H t, Tail... args) {
  */
 inline void _describe(void) {
   IO.write("  help\t\t", HELPHELP);
-  if (IO.interactive()) {
+  if (IO.interactive) {
     IO.write("  exit\t\t", EXITHELP);
   }
   IO.flush();

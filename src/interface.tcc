@@ -6,7 +6,6 @@
 #include "args.tcc"
 #include "eval.tcc"
 #include "help.tcc"
-#include "io.tcc"
 
 #define param(args...) pack(args) ///< Container for parameter definition.
 #define func(args...) pack(args)  ///< Container for function definition.
@@ -49,7 +48,7 @@ template <class... Args>
 bool interface(Args... args) {
   string command;
 
-  if (IO.interactive()) {
+  if (IO.interactive) {
     IO.write("> ");
   }
 

@@ -3,7 +3,8 @@
 
 /// \defgroup args
 
-#include "io.tcc"
+#include <io/io.tcc>
+
 #include "tuple.tcc"
 #include "types.tcc"
 
