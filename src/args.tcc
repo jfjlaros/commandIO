@@ -5,6 +5,7 @@
 
 #include <io/io.tcc>
 
+#include "error.h"
 #include "tuple.tcc"
 #include "types.tcc"
 
@@ -80,22 +81,20 @@ void setDefault(A& argv, D& defs) {
  * \param count Parameter number under consideration.
  * \param value Value.
  *
- * \return `true` on success, `false` otherwise.
+ * \return SUCCESS on success, an error code otherwise.
  */
-inline bool _updateRequired(Tuple<>&, Tuple<>&, int, int, string& value) {
-  IO.err("Excess parameter: ", value, "\n");
-  return false;
+inline int _updateRequired(Tuple<>&, Tuple<>&, int, int, string& value) {
+  return EEXCESSPARAM;
 }
 
 // Update a required argument.
 template <class A, PARG_T>
-bool _updateRequired(A& argv, PARG& defs, int num, int count, string& value) {
+int _updateRequired(A& argv, PARG& defs, int num, int count, string& value) {
   if (num == count) {
     if (!convert(&argv.head, value)) {
-      IO.write("Wrong type for parameter ", num + 1, "\n");
-      return false;
+      return EPARAMTYPE;
     }
-    return true;
+    return SUCCESS;
   }
 
   return _updateRequired(argv.tail, defs.tail, num, count + 1, value);
@@ -103,13 +102,13 @@ bool _updateRequired(A& argv, PARG& defs, int num, int count, string& value) {
 
 // Skip optional parameters.
 template <class A, class D>
-bool _updateRequired(A& argv, D& defs, int num, int count, string& value) {
+int _updateRequired(A& argv, D& defs, int num, int count, string& value) {
   return _updateRequired(argv.tail, defs.tail, num, count, value);
 }
 
 // Entry point.
 template <class A, class D>
-bool updateRequired(A& argv, D& defs, int num, string& value) {
+int updateRequired(A& argv, D& defs, int num, string& value) {
   return _updateRequired(argv, defs, num, 0, value);
 }
 
@@ -124,21 +123,18 @@ bool updateRequired(A& argv, D& defs, int num, string& value) {
  * \param defs Parameter definitions.
  * \param name Parameter name under consideration.
  *
- * \return `true` on success, `false` otherwise.
+ * \return SUCCESS on success, an error code otherwise.
  */
-inline bool updateOptional(Tuple<>&, Tuple<>&, string& name) {
-  if (name != "-h" && name != "--help") {
-    IO.err("Unknown parameter: ", name, "\n");
-  }
-  return false;
+inline int updateOptional(Tuple<>&, Tuple<>&, string& name) {
+  return EUNKNOWNPARAM;
 }
 
 // Update flag parameter.
 template <class... Tail, class D>
-bool updateOptional(Tuple<bool, Tail...>& argv, D& defs, string& name) {
+int updateOptional(Tuple<bool, Tail...>& argv, D& defs, string& name) {
   if (defs.head.head == name) {
     argv.head = !argv.head;
-    return true;
+    return SUCCESS;
   }
 
   return updateOptional(argv.tail, defs.tail, name);
@@ -146,13 +142,15 @@ bool updateOptional(Tuple<bool, Tail...>& argv, D& defs, string& name) {
 
 // Update optional parameter.
 template <class H, class... Tail, class D>
-bool updateOptional(Tuple<H, Tail...>& argv, D& defs, string& name) {
+int updateOptional(Tuple<H, Tail...>& argv, D& defs, string& name) {
   if (defs.head.head == name) {
-    if (!convert(&argv.head, IO.read())) {
-      IO.err("Wrong type for parameter ", name, "\n");;
-      return false;
+    if (IO.eol()) {
+      return EMISSINGVALUE;
     }
-    return true;
+    if (!convert(&argv.head, IO.read())) {
+      return EPARAMTYPE;
+    }
+    return SUCCESS;
   }
 
   return updateOptional(argv.tail, defs.tail, name);

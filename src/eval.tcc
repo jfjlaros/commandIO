@@ -89,8 +89,9 @@ void call(F f, A& argv) {
 template <class F, class A, class D>
 bool _parse(F f, A& argv, D& defs) {
   string token = "";
-  int req,
+  int errorCode,
       opt,
+      req,
       number = 0;
 
   setDefault(argv, defs);
@@ -99,15 +100,32 @@ bool _parse(F f, A& argv, D& defs) {
     token = IO.read();
 
     if (token[0] == '-') {
-      if (!updateOptional(argv, defs, token)) {
+      if (token == "-h" || token == "--help") {
         return false;
+      }
+
+      errorCode = updateOptional(argv, defs, token);
+
+      switch (errorCode) {
+        case SUCCESS:
+          continue;
+        case EUNKNOWNPARAM:
+          break;
+        default:
+          IO.write(errorMessage[errorCode], token, "\n");
+          return false;
       }
     }
-    else {
-      if (!updateRequired(argv, defs, number, token)) {
+
+    errorCode = updateRequired(argv, defs, number, token);
+
+    switch (errorCode) {
+      case SUCCESS:
+        number++;
+        continue;
+      default:
+        IO.write(errorMessage[errorCode], number + 1, "\n");
         return false;
-      }
-      number++;
     }
   }
 
