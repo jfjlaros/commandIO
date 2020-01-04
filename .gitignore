@@ -5,3 +5,4 @@ examples/calculator/calculator
 examples/demo/demo
 examples/math/math
 examples/test/test
+tests/run_tests
