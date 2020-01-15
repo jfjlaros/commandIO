@@ -117,6 +117,7 @@ int updateRequired(A& argv, D& defs, int num, string& value) {
  * \fn updateOptional(Tuple<H, Tail...>&, D&, string&)
  * \ingroup args
  *
+ * \param io Input / output object.
  * \param argv Arguments.
  * \param defs Parameter definitions.
  * \param name Parameter name under consideration.

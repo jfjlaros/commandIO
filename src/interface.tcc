@@ -16,6 +16,7 @@
  *
  * \ingroup interface
  *
+ * \param io Input / output object.
  * \param f Function pointer.
  * \param name Command name.
  * \param descr Command description.
@@ -39,6 +40,7 @@ bool interface(I& io, F f, T name, const char* descr, Args... defs) {
  *
  * \ingroup interface
  *
+ * \param io Input / output object.
  * \param args Function definitions.
  */
 template <class I, class... Args>

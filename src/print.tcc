@@ -9,8 +9,8 @@
 /**
  * Print a C string.
  *
- * @param io Input / output object.
- * @param data C string.
+ * \param io Input / output object.
+ * \param data C string.
  */
 template <class I>
 void print(I& io, const char* data) {
@@ -22,8 +22,8 @@ void print(I& io, const char* data) {
 /**
  * Print a string.
  *
- * @param io Input / output object.
- * @param data String.
+ * \param io Input / output object.
+ * \param data String.
  */
 template <class I>
 void print(I& io, string& data) {
@@ -33,8 +33,8 @@ void print(I& io, string& data) {
 /**
  * Print a value of basic type.
  *
- * @param io Input / output object.
- * @param data Data.
+ * \param io Input / output object.
+ * \param data Data.
  */
 template <class I, class T>
 void print(I& io, T data) {
@@ -46,9 +46,9 @@ void print(I& io, T data) {
 /**
  * Print any number of values.
  *
- * @param io Input / output object.
- * @param data Value to be printed.
- * @param args Remaining values.
+ * \param io Input / output object.
+ * \param data Value to be printed.
+ * \param args Remaining values.
  */
 template <class I, class H, class... Tail>
 void print(I& io, H data, Tail... args) {

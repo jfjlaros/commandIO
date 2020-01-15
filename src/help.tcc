@@ -19,6 +19,7 @@
  *   void (*)(H, Tail...), Tuple<Tuple<const char*, const char*>, Args...>&)
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param f Function pointer.
  * \param defs Parameter definitions.
  */
@@ -49,6 +50,7 @@ void helpRequired(I& io, void (*f)(H, Tail...), D& defs) {
  * \fn helpOptional(void (*)(H, Tail...), D&) {
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param f Function pointer.
  * \param defs Parameter definitions.
  */
@@ -88,6 +90,7 @@ void helpOptional(I& io, void (*f)(H, Tail...), D& defs) {
  * \fn returnType(R (*)(FArgs...))
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param - Function pointer.
  */
 template <class I, class... FArgs>
@@ -107,6 +110,7 @@ void returnType(I& io, R (*)(FArgs...)) {
  *
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param f Function pointer.
  * \param name Command name.
  * \param descr Command description.
@@ -139,6 +143,7 @@ void help(I& io, R (*f)(FArgs...), string name, string descr, D& defs) {
  *
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param m Tuple containing pointers to a class instance and a class member
  *   function.
  * \param name Command name.
@@ -157,6 +162,7 @@ void help(I& io, TMEMB m, string name, string descr, D& defs) {
  * \fn selectHelp(string, H, Tail...)
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param name Command name.
  * \param t Function definition under consideration.
  * \param args Remaining function definitions.
@@ -203,6 +209,7 @@ bool selectHelp(I& io, string name, H t, Tail... args) {
  * \fn describe(Args...)
  * \ingroup help
  *
+ * \param io Input / output object.
  * \param args Function definitions.
  */
 template <class I>

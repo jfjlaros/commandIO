@@ -55,6 +55,7 @@ void _call(I& io, F f, A& argv, Args&... args) {
  *
  * \ingroup eval
  *
+ * \param io Input / output object.
  * \param m Tuple containing pointers to a class instance and a class member
  *   function.
  * \param argv Tuple containing arguments.
@@ -69,6 +70,7 @@ void call(I& io, TMEMB& m, A& argv) {
  *
  * \ingroup eval
  *
+ * \param io Input / output object.
  * \param f Function pointer.
  * \param argv Tuple containing arguments.
  */
@@ -81,6 +83,7 @@ void call(I& io, F f, A& argv) {
 /**
  * Set defaults, collect parameters, do sanity checking and call a function.
  *
+ * \param io Input / output object.
  * \param f Function pointer or Tuple for class member functions.
  * \param argv Tuple containing arguments.
  * \param defs Parameter definitions.
@@ -147,6 +150,7 @@ bool _parse(I& io, F f, A& argv, D& defs) {
  *
  * \ingroup eval
  *
+ * \param io Input / output object.
  * \param m Tuple containing pointers to a class instance and a class member
  *   function.
  * \param defs Parameter definitions.
@@ -165,6 +169,7 @@ bool parse(I& io, TMEMB& m, D& defs) {
  *
  * \ingroup eval
  *
+ * \param io Input / output object.
  * \param f Function pointer.
  * \param defs Parameter definitions.
  *
@@ -184,6 +189,7 @@ bool parse(I& io, R (*f)(FArgs...), D& defs) {
  * \fn select(string, H, Args...)
  * \ingroup eval
  *
+ * \param io Input / output object.
  * \param name Command name.
  * \param t Function definition under consideration.
  * \param args Remaining function definitions.
