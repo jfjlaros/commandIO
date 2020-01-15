@@ -29,9 +29,10 @@ string flood(string name, int times) {
 
 
 int main(int argc, char** argv) {
-  IO.enableCLI(argc, argv);
+  CliIO io(argc, argv);
 
   interface(
+    io,
     func(hi, "hi", "simple greeting",
       param("-s", false, "shout")),
     func(greet, "greet", "personal greeting",

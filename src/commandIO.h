@@ -7,4 +7,9 @@
 
 #include "interface.tcc"
 
+// I/O plugins.
+#include "plugins/cli/io.h"
+#include "plugins/repl/io.h"
+
+
 #endif

@@ -22,23 +22,24 @@
  * \param f Function pointer.
  * \param defs Parameter definitions.
  */
-inline void helpRequired(void (*)(void), Tuple<>&) {}
+template <class I>
+void helpRequired(I&, void (*)(void), Tuple<>&) {}
 
 // Required parameter.
-template <class H, class... Tail, PARG_T>
-void helpRequired(void (*f)(H, Tail...), PARG& defs) {
+template <class I, class H, class... Tail, PARG_T>
+void helpRequired(I& io, void (*f)(H, Tail...), PARG& defs) {
   H data;
 
-  IO.write(
-    "  ", defs.head.head, "\t\t", defs.head.tail.head, " (type ", typeof(data),
-    ")\n");
-  helpRequired((void (*)(Tail...))f, defs.tail);
+  print(
+    io, "  ", defs.head.head, "\t\t", defs.head.tail.head, " (type ",
+    typeof(data), ")\n");
+  helpRequired(io, (void (*)(Tail...))f, defs.tail);
 }
 
 // Skip optional parameter.
-template <class H, class... Tail, class D>
-void helpRequired(void (*f)(H, Tail...), D& defs) {
-  helpRequired((void (*)(Tail...))f, defs.tail);
+template <class I, class H, class... Tail, class D>
+void helpRequired(I& io, void (*f)(H, Tail...), D& defs) {
+  helpRequired(io, (void (*)(Tail...))f, defs.tail);
 }
 
 
@@ -51,31 +52,33 @@ void helpRequired(void (*f)(H, Tail...), D& defs) {
  * \param f Function pointer.
  * \param defs Parameter definitions.
  */
-inline void helpOptional(void (*)(void), Tuple<>&) {}
+template <class I>
+void helpOptional(I&, void (*)(void), Tuple<>&) {}
 
 // Skip required parameter.
-template <class H, class... Tail, PARG_T>
-void helpOptional(void (*f)(H, Tail...), PARG& defs) {
-  helpOptional((void (*)(Tail...))f, defs.tail);
+template <class I, class H, class... Tail, PARG_T>
+void helpOptional(I& io, void (*f)(H, Tail...), PARG& defs) {
+  helpOptional(io, (void (*)(Tail...))f, defs.tail);
 }
 
 // Optional parameter of type `flag`.
-template <class... Tail, class D>
-void helpOptional(void (*f)(bool, Tail...), D& defs) {
-  IO.write(
-    "  ", defs.head.head, "\t\t", defs.head.tail.tail.head, " (type flag)\n");
-  helpOptional((void (*)(Tail...))f, defs.tail);
+template <class I, class... Tail, class D>
+void helpOptional(I& io, void (*f)(bool, Tail...), D& defs) {
+  print(
+    io, "  ", defs.head.head, "\t\t", defs.head.tail.tail.head,
+    " (type flag)\n");
+  helpOptional(io, (void (*)(Tail...))f, defs.tail);
 }
 
 // Optional parameter.
-template <class H, class... Tail, class D>
-void helpOptional(void (*f)(H, Tail...), D& defs) {
+template <class I, class H, class... Tail, class D>
+void helpOptional(I& io, void (*f)(H, Tail...), D& defs) {
   H data;
 
-  IO.write(
-    "  ", defs.head.head, "\t\t", defs.head.tail.tail.head, " (type ",
+  print(
+    io, "  ", defs.head.head, "\t\t", defs.head.tail.tail.head, " (type ",
     typeof(data), ", default: ", defs.head.tail.head, ")\n");
-  helpOptional((void (*)(Tail...))f, defs.tail);
+  helpOptional(io, (void (*)(Tail...))f, defs.tail);
 }
 
 
@@ -87,15 +90,15 @@ void helpOptional(void (*f)(H, Tail...), D& defs) {
  *
  * \param - Function pointer.
  */
-template <class... FArgs>
-void returnType(void (*)(FArgs...)) {}
+template <class I, class... FArgs>
+void returnType(I&, void (*)(FArgs...)) {}
 
 // Entry point.
-template <class R, class... FArgs>
-void returnType(R (*)(FArgs...)) {
+template <class I, class R, class... FArgs>
+void returnType(I& io, R (*)(FArgs...)) {
   R data;
 
-  IO.write("\nreturns:\n  ", typeof(data), "\n");
+  print(io, "\nreturns:\n  ", typeof(data), "\n");
 }
 
 
@@ -109,26 +112,26 @@ void returnType(R (*)(FArgs...)) {
  * \param descr Command description.
  * \param defs Parameter definitions.
  */
-template <class R, class... FArgs, class D>
-void help(R (*f)(FArgs...), string name, string descr, D& defs) {
+template <class I, class R, class... FArgs, class D>
+void help(I& io, R (*f)(FArgs...), string name, string descr, D& defs) {
   int req,
       opt;
 
-  IO.write(name, ": ", descr, "\n");
+  print(io, name, ": ", descr, "\n");
 
   countArgs(req, opt, defs);
 
   if (req) {
-    IO.write("\npositional arguments:\n");
-    helpRequired((void (*)(FArgs...))f, defs);
+    print(io, "\npositional arguments:\n");
+    helpRequired(io, (void (*)(FArgs...))f, defs);
   }
 
   if (opt) {
-    IO.write("\noptional arguments:\n");
-    helpOptional((void (*)(FArgs...))f, defs);
+    print(io, "\noptional arguments:\n");
+    helpOptional(io, (void (*)(FArgs...))f, defs);
   }
 
-  returnType(f);
+  returnType(io, f);
 }
 
 /**
@@ -142,9 +145,9 @@ void help(R (*f)(FArgs...), string name, string descr, D& defs) {
  * \param descr Command description.
  * \param defs Parameter definitions.
  */
-template <TMEMB_T, class D>
-void help(TMEMB m, string name, string descr, D& defs) {
-  help((R (*)(FArgs...))m.tail.head, name, descr, defs);
+template <class I, TMEMB_T, class D>
+void help(I& io, TMEMB m, string name, string descr, D& defs) {
+  help(io, (R (*)(FArgs...))m.tail.head, name, descr, defs);
 }
 
 
@@ -160,36 +163,37 @@ void help(TMEMB m, string name, string descr, D& defs) {
  *
  * \return `true` on success, `false` otherwise.
  */
-inline bool selectHelp(string name) {
+template <class I>
+bool selectHelp(I& io, string name) {
   bool result = true;
 
   if (name == "help") {
-    IO.write(
-      name, ": ", HELPHELP, "\npositional arguments:\n",
+    print(
+      io, name, ": ", HELPHELP, "\npositional arguments:\n",
       "  name\t\tcommand name (type string)\n");
   }
-  else if (IO.interactive && name == "exit") {
-    IO.write(name, ": ", EXITHELP);
+  else if (io.interactive && name == "exit") {
+    print(io, name, ": ", EXITHELP);
   }
   else {
-    IO.write("Unknown command: ", name, "\n");
+    print(io, "Unknown command: ", name, "\n");
     result = false;
   }
 
-  IO.flush();
+  io.flush();
 
   return result;
 }
 
 // Entry point.
-template <class H, class... Tail>
-bool selectHelp(string name, H t, Tail... args) {
+template <class I, class H, class... Tail>
+bool selectHelp(I& io, string name, H t, Tail... args) {
   if (t.tail.head == name) {
-    help(t.head, t.tail.head, t.tail.tail.head, t.tail.tail.tail);
+    help(io, t.head, t.tail.head, t.tail.tail.head, t.tail.tail.tail);
     return true;
   }
 
-  return selectHelp(name, args...);
+  return selectHelp(io, name, args...);
 }
 
 
@@ -201,26 +205,27 @@ bool selectHelp(string name, H t, Tail... args) {
  *
  * \param args Function definitions.
  */
-inline void _describe(void) {
-  IO.write("  help\t\t", HELPHELP);
-  if (IO.interactive) {
-    IO.write("  exit\t\t", EXITHELP);
+template <class I>
+void _describe(I& io) {
+  print(io, "  help\t\t", HELPHELP);
+  if (io.interactive) {
+    print(io, "  exit\t\t", EXITHELP);
   }
-  IO.flush();
+  io.flush();
 }
 
 // Short description of one function.
-template <class H, class... Tail>
-void _describe(H t, Tail... args) {
-  IO.write("  ", t.tail.head, "\t\t", t.tail.tail.head, "\n");
-  _describe(args...);
+template <class I, class H, class... Tail>
+void _describe(I& io, H t, Tail... args) {
+  print(io, "  ", t.tail.head, "\t\t", t.tail.tail.head, "\n");
+  _describe(io, args...);
 }
 
 // Entry point.
-template <class... Args>
-void describe(Args... args) {
-  IO.write("Available commands:\n");
-  _describe(args...);
+template <class I, class... Args>
+void describe(I& io, Args... args) {
+  print(io, "Available commands:\n");
+  _describe(io, args...);
 }
 
 #endif

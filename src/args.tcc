@@ -9,8 +9,6 @@
 #include "tuple.tcc"
 #include "types.tcc"
 
-extern RWIO IO;
-
 
 /**
  * Count parameters.
@@ -125,35 +123,36 @@ int updateRequired(A& argv, D& defs, int num, string& value) {
  *
  * \return SUCCESS on success, an error code otherwise.
  */
-inline int updateOptional(Tuple<>&, Tuple<>&, string& name) {
+template <class I>
+int updateOptional(I&, Tuple<>&, Tuple<>&, string& name) {
   return EUNKNOWNPARAM;
 }
 
 // Update flag parameter.
-template <class... Tail, class D>
-int updateOptional(Tuple<bool, Tail...>& argv, D& defs, string& name) {
+template <class I, class... Tail, class D>
+int updateOptional(I& io, Tuple<bool, Tail...>& argv, D& defs, string& name) {
   if (defs.head.head == name) {
     argv.head = !argv.head;
     return SUCCESS;
   }
 
-  return updateOptional(argv.tail, defs.tail, name);
+  return updateOptional(io, argv.tail, defs.tail, name);
 }
 
 // Update optional parameter.
-template <class H, class... Tail, class D>
-int updateOptional(Tuple<H, Tail...>& argv, D& defs, string& name) {
+template <class I, class H, class... Tail, class D>
+int updateOptional(I& io, Tuple<H, Tail...>& argv, D& defs, string& name) {
   if (defs.head.head == name) {
-    if (IO.eol()) {
+    if (io.eol()) {
       return EMISSINGVALUE;
     }
-    if (!convert(&argv.head, IO.read())) {
+    if (!convert(&argv.head, io.read())) {
       return EPARAMTYPE;
     }
     return SUCCESS;
   }
 
-  return updateOptional(argv.tail, defs.tail, name);
+  return updateOptional(io, argv.tail, defs.tail, name);
 }
 
 #endif

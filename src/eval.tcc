@@ -3,6 +3,7 @@
 
 /// \defgroup eval
 
+#include "print.tcc"
 #include "tuple.tcc"
 
 
@@ -14,27 +15,27 @@
  */
 
 // Void class member function.
-template <VMEMB_T, class... Args>
-void _call(VMEMB& m, Tuple<>&, Args&... args) {
+template <class I, VMEMB_T, class... Args>
+void _call(I&, VMEMB& m, Tuple<>&, Args&... args) {
   (*m.head.*m.tail.head)(args...);
 }
 
 // Void function.
-template <class... FArgs, class... Args>
-void _call(void (*f)(FArgs...), Tuple<>&, Args&... args) {
+template <class I, class... FArgs, class... Args>
+void _call(I&, void (*f)(FArgs...), Tuple<>&, Args&... args) {
   f(args...);
 }
 
 // Class member function that returns a value.
-template <TMEMB_T, class... Args>
-void _call(TMEMB& m, Tuple<>&, Args&... args) {
-  IO.write((*m.head.*m.tail.head)(args...), "\n");
+template <class I, TMEMB_T, class... Args>
+void _call(I& io, TMEMB& m, Tuple<>&, Args&... args) {
+  print(io, (*m.head.*m.tail.head)(args...), "\n");
 }
 
 // Function that returns a value.
-template <class F, class... Args>
-void _call(F f, Tuple<>&, Args&... args) {
-  IO.write(f(args...), "\n");
+template <class I, class F, class... Args>
+void _call(I& io, F f, Tuple<>&, Args&... args) {
+  print(io, f(args...), "\n");
 }
 
 
@@ -43,9 +44,9 @@ void _call(F f, Tuple<>&, Args&... args) {
  *
  * The first member of the tuple `argv` is added to the parameter pack `args`.
  */
-template <class F, class A, class... Args>
-void _call(F f, A& argv, Args&... args) {
-  _call(f, argv.tail, args..., argv.head);
+template <class I, class F, class A, class... Args>
+void _call(I& io, F f, A& argv, Args&... args) {
+  _call(io, f, argv.tail, args..., argv.head);
 }
 
 
@@ -58,9 +59,9 @@ void _call(F f, A& argv, Args&... args) {
  *   function.
  * \param argv Tuple containing arguments.
  */
-template <TMEMB_T, class A>
-void call(TMEMB& m, A& argv) {
-  _call(m, argv);
+template <class I, TMEMB_T, class A>
+void call(I& io, TMEMB& m, A& argv) {
+  _call(io, m, argv);
 }
 
 /**
@@ -71,9 +72,9 @@ void call(TMEMB& m, A& argv) {
  * \param f Function pointer.
  * \param argv Tuple containing arguments.
  */
-template <class F, class A>
-void call(F f, A& argv) {
-  _call(f, argv);
+template <class I, class F, class A>
+void call(I& io, F f, A& argv) {
+  _call(io, f, argv);
 }
 
 
@@ -86,8 +87,8 @@ void call(F f, A& argv) {
  *
  * \return `true` on success, `false` otherwise.
  */
-template <class F, class A, class D>
-bool _parse(F f, A& argv, D& defs) {
+template <class I, class F, class A, class D>
+bool _parse(I& io, F f, A& argv, D& defs) {
   string token = "";
   int errorCode,
       opt,
@@ -96,15 +97,15 @@ bool _parse(F f, A& argv, D& defs) {
 
   setDefault(argv, defs);
 
-  while (!IO.eol()) {
-    token = IO.read();
+  while (!io.eol()) {
+    token = io.read();
 
     if (token[0] == '-') {
       if (token == "-h" || token == "--help") {
         return false;
       }
 
-      errorCode = updateOptional(argv, defs, token);
+      errorCode = updateOptional(io, argv, defs, token);
 
       switch (errorCode) {
         case SUCCESS:
@@ -112,7 +113,7 @@ bool _parse(F f, A& argv, D& defs) {
         case EUNKNOWNPARAM:
           break;
         default:
-          IO.write(errorMessage[errorCode], token, "\n");
+          print(io, errorMessage[errorCode], token, "\n");
           return false;
       }
     }
@@ -124,7 +125,7 @@ bool _parse(F f, A& argv, D& defs) {
         number++;
         continue;
       default:
-        IO.write(errorMessage[errorCode], number + 1, "\n");
+        print(io, errorMessage[errorCode], number + 1, "\n");
         return false;
     }
   }
@@ -132,11 +133,11 @@ bool _parse(F f, A& argv, D& defs) {
   countArgs(req, opt, defs);
 
   if (number < req) {
-    IO.write("Required parameter missing.\n");
+    print(io, "Required parameter missing.\n");
     return false;
   }
 
-  call(f, argv);
+  call(io, f, argv);
 
   return true;
 }
@@ -152,11 +153,11 @@ bool _parse(F f, A& argv, D& defs) {
  *
  * \return `true` on success, `false` otherwise.
  */
-template <TMEMB_T, class D>
-bool parse(TMEMB& m, D& defs) {
+template <class I, TMEMB_T, class D>
+bool parse(I& io, TMEMB& m, D& defs) {
   Tuple<FArgs...> argv;
 
-  return _parse(m, argv, defs);
+  return _parse(io, m, argv, defs);
 }
 
 /**
@@ -169,11 +170,11 @@ bool parse(TMEMB& m, D& defs) {
  *
  * \return `true` on success, `false` otherwise.
  */
-template <class R, class... FArgs, class D>
-bool parse(R (*f)(FArgs...), D& defs) {
+template <class I, class R, class... FArgs, class D>
+bool parse(I& io, R (*f)(FArgs...), D& defs) {
   Tuple<FArgs...> argv;
 
-  return _parse(f, argv, defs);
+  return _parse(io, f, argv, defs);
 }
 
 
@@ -189,20 +190,21 @@ bool parse(R (*f)(FArgs...), D& defs) {
  *
  * \return `true` on success, `false` otherwise.
  */
-inline bool select(string name) {
-  IO.write("Unknown command: ", name, "\n");
-  IO.flush();
+template <class I>
+bool select(I& io, string name) {
+  print(io, "Unknown command: ", name, "\n");
+  io.flush();
   return false;
 }
 
 // Entry point.
-template <class H, class... Args>
-bool select(string name, H t, Args... args) {
+template <class I, class H, class... Args>
+bool select(I& io, string name, H t, Args... args) {
   if (t.tail.head == name) {
-    return parse(t.head, t.tail.tail.tail);
+    return parse(io, t.head, t.tail.tail.tail);
   }
 
-  return select(name, args...);
+  return select(io, name, args...);
 }
 
 #endif

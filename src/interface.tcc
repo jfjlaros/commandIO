@@ -10,9 +10,6 @@
 #define param(args...) pack(args) ///< Container for parameter definition.
 #define func(args...) pack(args)  ///< Container for function definition.
 
-RWIO IO;                          ///< User input and output.
-
-
 
 /**
  * Build a user interface for one function.
@@ -26,12 +23,12 @@ RWIO IO;                          ///< User input and output.
  *
  * \return `true` to continue `false` to quit.
  */
-template <class F, class T, class... Args>
-bool interface(F f, T name, const char* descr, Args... defs) {
+template <class I, class F, class T, class... Args>
+bool interface(I& io, F f, T name, const char* descr, Args... defs) {
   Tuple<Args...> t = pack(defs...);
 
-  if (!parse(f, t)) {
-    help(f, name, descr, t);
+  if (!parse(io, f, t)) {
+    help(io, f, name, descr, t);
   }
 
   return true;
@@ -44,30 +41,30 @@ bool interface(F f, T name, const char* descr, Args... defs) {
  *
  * \param args Function definitions.
  */
-template <class... Args>
-bool interface(Args... args) {
+template <class I, class... Args>
+bool interface(I& io, Args... args) {
   string command;
 
-  if (IO.interactive) {
-    IO.write("> ");
+  if (io.interactive) {
+    print(io, "> ");
   }
 
-  if (!IO.eol() || IO.interactive) {
-    command = IO.read();
+  if (!io.eol() || io.interactive) {
+    command = io.read();
   }
 
   if (command == "exit") {
     return false;
   }
   if (command == "help") {
-    if (IO.eol() || !selectHelp(IO.read(), args...)) {
-      describe(args...);
+    if (io.eol() || !selectHelp(io, io.read(), args...)) {
+      describe(io, args...);
     }
     return true;
   }
 
-  if (!select(command, args...)) {
-    describe(args...);
+  if (!select(io, command, args...)) {
+    describe(io, args...);
   }
 
   return true;

@@ -27,7 +27,10 @@ float multiply(float a, int b) {
 
 
 int main(void) {
+  ReplIO io;
+
   while (interface(
+    io,
     func(greet, "greet", "Say hi to someone.",
       param("name", "someone's name"),
       param("-t", 1, "greet multiple times"),

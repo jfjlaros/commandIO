@@ -16,10 +16,11 @@ int sequence(int a, int b, int n) {
 }
 
 
-int main(int argc, char** argv) {
-  IO.enableCLI(argc, argv);
+int main(int argc, char* argv[]) {
+  CliIO io(argc, argv);
 
   interface(
+    io,
     sequence, argv[0], "Give the n-th number in a sequence.", 
       param("-a", 0, "first number"),
       param("-b", 1, "second number"),

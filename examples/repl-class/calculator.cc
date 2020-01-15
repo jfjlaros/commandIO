@@ -19,9 +19,11 @@ class Calculator {
 
 
 int main(void) {
+  ReplIO io;
   Calculator calc;
 
   while (interface(
+    io,
     func(pack(&calc, &Calculator::add), "add", "Increase the total.",
       param("amount", "increase by this amount")),
     func(pack(&calc, &Calculator::subtract), "sub", "Decrease the total.",
