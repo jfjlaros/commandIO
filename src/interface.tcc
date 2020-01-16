@@ -3,7 +3,6 @@
 
 /// \defgroup interface
 
-#include "args.tcc"
 #include "eval.tcc"
 #include "help.tcc"
 
@@ -25,7 +24,7 @@
  * \return `true` to continue `false` to quit.
  */
 template <class I, class F, class T, class... Args>
-bool interface(I& io, F f, T name, const char* descr, Args... defs) {
+bool commandInterface(I& io, F f, T name, const char* descr, Args... defs) {
   Tuple<Args...> t = pack(defs...);
 
   if (!parse(io, f, t)) {
@@ -44,7 +43,7 @@ bool interface(I& io, F f, T name, const char* descr, Args... defs) {
  * \param args Function definitions.
  */
 template <class I, class... Args>
-bool interface(I& io, Args... args) {
+bool commandInterface(I& io, Args... args) {
   string command;
 
   if (io.interactive) {

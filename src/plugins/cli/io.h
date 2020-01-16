@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-using namespace std;
+using std::string;
 
 /**
  * User input and output.

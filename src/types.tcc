@@ -2,6 +2,12 @@
 #define USERIO_TYPES_TCC_
 
 #include <sstream>
+#include <string>
+
+#include "tuple.tcc"
+
+using std::string;
+using std::istringstream;
 
 #define PARG_T class... Args
 #define PARG Tuple<Tuple<const char*, const char*>, Args...>

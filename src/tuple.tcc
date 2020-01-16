@@ -1,9 +1,6 @@
 #ifndef USERIO_TUPLE_TCC_
 #define USERIO_TUPLE_TCC_
 
-#define VMEMB_T class C, class P, class... FArgs
-#define VMEMB Tuple<C*, void (P::*)(FArgs...)>
-
 #define TMEMB_T class C, class R, class P, class... FArgs
 #define TMEMB Tuple<C*, R (P::*)(FArgs...)>
 

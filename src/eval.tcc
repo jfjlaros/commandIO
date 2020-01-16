@@ -3,8 +3,15 @@
 
 /// \defgroup eval
 
-#include "print.tcc"
+#include <string>
+
+#include "error.h"
 #include "tuple.tcc"
+
+using std::string;
+
+#define VMEMB_T class C, class P, class... FArgs
+#define VMEMB Tuple<C*, void (P::*)(FArgs...)>
 
 
 /*

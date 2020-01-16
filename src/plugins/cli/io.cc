@@ -1,5 +1,8 @@
 #include "io.h"
 
+using std::cout;
+
+
 CliIO::CliIO(int argc, char** argv) {
   _argc = argc;
   _argv = argv;

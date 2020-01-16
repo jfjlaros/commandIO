@@ -3,9 +3,8 @@
 
 /// \defgroup help
 
-#include <io/io.tcc>
-
-#include "tuple.tcc"
+#include "args.tcc"
+#include "print.tcc"
 #include "types.tcc"
 
 #define HELPHELP "Help on a specific command.\n"

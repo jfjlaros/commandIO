@@ -5,6 +5,11 @@
  * Print functions.
  */
 
+#include <string>
+
+using std::string;
+using std::to_string;
+
 
 /**
  * Print a C string.

@@ -1,5 +1,8 @@
 #include "io.h"
 
+using std::cout;
+
+
 /**
  * Check whether a line ending was encountered.
  *
