@@ -1,16 +1,15 @@
 #include <catch.hpp>
 
 #include "plugins/cli/io.h"
+#include "plugins/repl/io.h"
 
 #define main __doc_main__
 #include "../examples/doc/doc.cc"
 #undef main
 
-/*
 #define main __repl_class_main__
 #include "../examples/repl-class/calculator.cc"
 #undef main
-*/
 
 
 TEST_CASE("Documentation test", "[example]") {
@@ -21,7 +20,6 @@ TEST_CASE("Documentation test", "[example]") {
   REQUIRE(_CIO.output == "17\n");
 }
 
-/*
 TEST_CASE("Class test", "[example]") {
   const char* argv[] = {
     "add", "6\n", "show"};
@@ -30,6 +28,5 @@ TEST_CASE("Class test", "[example]") {
 
   __repl_class_main__();
 
-  REQUIRE(RIO.output == "> > 6\n> ");
+  REQUIRE(_RIO.output == "> > 6\n> ");
 }
-*/
