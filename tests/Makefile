@@ -1,7 +1,7 @@
 EXEC := run_tests
 MAIN := test_lib
 TESTS := test_examples
-FIXTURES := io/io
+FIXTURES := plugins/cli/io plugins/repl/io
 
 
 CC := g++

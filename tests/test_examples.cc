@@ -1,29 +1,35 @@
 #include <catch.hpp>
 
-#define main __test_doc__
+#include "plugins/cli/io.h"
+
+#define main __doc_main__
 #include "../examples/doc/doc.cc"
 #undef main
 
-#define main __test_repl_class__
+/*
+#define main __repl_class_main__
 #include "../examples/repl-class/calculator.cc"
 #undef main
+*/
 
 
 TEST_CASE("Documentation test", "[example]") {
   const char* argv[] = {"dummy", "8", "9"};
 
-  __test_doc__(3, (char**)argv);
+  __doc_main__(3, (char**)argv);
 
-  REQUIRE(IO.output == "17\n");
+  REQUIRE(_CIO.output == "17\n");
 }
 
+/*
 TEST_CASE("Class test", "[example]") {
   const char* argv[] = {
     "add", "6\n", "show"};
 
-  IO.prepare(3, (char**)argv);
+  _RIO.prepare(3, (char**)argv);
 
-  __test_repl_class__();
+  __repl_class_main__();
 
-  REQUIRE(IO.output == "> > 6\n> ");
+  REQUIRE(RIO.output == "> > 6\n> ");
 }
+*/
