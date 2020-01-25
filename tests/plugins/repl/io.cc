@@ -5,8 +5,8 @@
  *
  * @return `true` if a line ending was encountered, `false` otherwise.
  */
-bool _CLiIO::eol(void) {
-  return _number >= _argc - 1;
+bool _ReplIO::eol(void) {
+  return _endOfLine || _number >= _argc - 1; // || needed?
 }
 
 /**
@@ -15,9 +15,11 @@ bool _CLiIO::eol(void) {
  * @param argc The number of arguments in `argv`.
  * @param argv Array of arguments.
  */
-void _CLiIO::prepare(int argc, char** argv) {
+void _ReplIO::prepare(int argc, char** argv) {
   _argc = argc;
   _argv = argv;
+  _endOfLine = false;
+  _number = -1;
   output = "";
 }
 
@@ -26,34 +28,44 @@ void _CLiIO::prepare(int argc, char** argv) {
  *
  * @return A string.
  */
-string _CLiIO::read(void) {
+string _ReplIO::read(void) {
+  string s;
+  int i;
+
   _number++;
+
+  if (_number > _argc - 1) {
+    return "exit";
+  }
+
+  s = _argv[_number];
+  i = s.size() - 1;
+
+  _endOfLine = false;
+
+  if (s[i] == '\n') {
+    _endOfLine = true;
+    return s.substr(0, i);
+  }
 
   return _argv[_number];
 }
 
-/**
+/*
  *
  */
-void _CLiIO::write(string& data) {
+void _ReplIO::write(string& data) {
   output += data;
 }
 
-
-/**
- *
- */
-CliIO::CliIO(int argc, char** argv) {
-  _CIO.prepare(argc, argv);
-}
 
 /**
  * Check whether a line ending was encountered.
  *
  * @return `true` if a line ending was encountered, `false` otherwise.
  */
-bool CliIO::eol(void) {
-  return _CIO.eol();
+bool ReplIO::eol(void) {
+  return _RIO.eol();
 }
 
 /**
@@ -61,8 +73,8 @@ bool CliIO::eol(void) {
  *
  * @return String.
  */
-string CliIO::read(void) {
-  return _CIO.read();
+string ReplIO::read(void) {
+  return _RIO.read();
 }
 
 /**
@@ -70,9 +82,9 @@ string CliIO::read(void) {
  *
  * @param data String.
  */
-void CliIO::write(string& data) {
-  _CIO.write(data);
+void ReplIO::write(string& data) {
+  _RIO.write(data);
 }
 
 
-_CLiIO _CIO;
+_ReplIO _RIO;

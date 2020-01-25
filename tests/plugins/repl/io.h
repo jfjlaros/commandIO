@@ -1,5 +1,5 @@
-#ifndef USERIO_CLIIO_H_
-#define USERIO_CLIIO_H_
+#ifndef USERIO_REPLIO_H_
+#define USERIO_REPLIO_H_
 
 #include <string>
 
@@ -8,9 +8,9 @@ using std::string;
 /**
  * User input and output.
  */
-class _CLiIO {
+class _ReplIO {
   public:
-    _CLiIO(void) {}
+    _ReplIO(void) {}
     bool eol(void);
     void prepare(int, char**);
     string read(void);
@@ -20,22 +20,23 @@ class _CLiIO {
     int _argc,
         _number;
     char** _argv;
+    bool _endOfLine;
 };
 
 /**
  * User input and output.
  */
-class CliIO {
+class ReplIO {
   public:
-    CliIO(int, char**);
+    ReplIO(void) {}
     bool eol(void);
     void flush(void) {}
     string read(void);
     void write(string&);
-    bool interactive = false;
+    bool interactive = true;
 };
 
 
-extern _CLiIO _CIO;
+extern _ReplIO _RIO;
 
 #endif
