@@ -1,5 +1,5 @@
 EXEC := $(basename $(shell ls *.cc))
-OBJS := ../../src/plugins/cli/io ../../src/plugins/repl/io
+OBJS := ../../src/error ../../src/plugins/cli/io ../../src/plugins/repl/io
 
 
 CC := g++

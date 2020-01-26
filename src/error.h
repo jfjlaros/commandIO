@@ -7,11 +7,6 @@
 #define EPARAMTYPE 3
 #define EUNKNOWNPARAM 4
 
-const char* errorMessage[] = {
-  "",
-  "Excess parameter: ",
-  "Missing value for parameter ",
-  "Wrong type for parameter ",
-  "Unknown parameter: "};
+extern const char* errorMessage[];
 
 #endif

@@ -18,6 +18,7 @@ bool _CLiIO::eol(void) {
 void _CLiIO::prepare(int argc, char** argv) {
   _argc = argc;
   _argv = argv;
+  _number = 0;
   output = "";
 }
 

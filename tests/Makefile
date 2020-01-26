@@ -1,11 +1,12 @@
 EXEC := run_tests
 MAIN := test_lib
-TESTS := test_examples
+TESTS := test_examples_cli test_examples_repl
+OBJS := ../src/error
 FIXTURES := plugins/cli/io plugins/repl/io
 
 
 CC := g++
-INCLUDE := -I . -I ../src
+INCLUDE := -I fixtures -I ../src
 CC_ARGS := -Wno-pmf-conversions -std=c++11
 
 
