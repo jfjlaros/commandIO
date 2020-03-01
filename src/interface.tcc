@@ -3,6 +3,8 @@
 
 /// \defgroup interface
 
+#include <unistd.h>
+
 #include "eval.tcc"
 #include "help.tcc"
 
@@ -44,29 +46,34 @@ bool commandInterface(I& io, F f, T name, const char* descr, Args... defs) {
  */
 template <class I, class... Args>
 bool commandInterface(I& io, Args... args) {
+  static bool prompt = true;
   string command;
 
-  if (io.interactive) {
+  if (io.interactive and prompt) {
     print(io, "> ");
+    prompt = false;
   }
 
-  if (!io.eol() || io.interactive) {
+  if (io.available()) {
     command = io.read();
-  }
+    prompt = true;
 
-  if (command == "exit") {
-    return false;
-  }
-  if (command == "help") {
-    if (io.eol() || !selectHelp(io, io.read(), args...)) {
+    if (command == "exit") {
+      return false;
+    }
+    if (command == "help") {
+      if (io.eol() || !selectHelp(io, io.read(), args...)) {
+        describe(io, args...);
+      }
+      return true;
+    }
+
+    if (!select(io, command, args...)) {
       describe(io, args...);
     }
-    return true;
   }
 
-  if (!select(io, command, args...)) {
-    describe(io, args...);
-  }
+  usleep(10000);
 
   return true;
 }
