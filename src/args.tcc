@@ -52,7 +52,6 @@ inline void setDefault(Tuple<>&, Tuple<>&) {}
 // Set required argument.
 template <class A, PARG_T>
 void setDefault(A& argv, PARG& defs) {
-  convert(&argv.head, "0");
   setDefault(argv.tail, defs.tail);
 }
 
@@ -93,6 +92,15 @@ int _updateRequired(A& argv, PARG& defs, int num, int count, string& value) {
   }
 
   return _updateRequired(argv.tail, defs.tail, num, count + 1, value);
+}
+
+template <class T, PARG_T>
+int _updateRequired(
+    Tuple<vector<T>>& argv, PARG& defs, int, int, string& value) {
+  if (!convert(&argv.head, value)) {
+    return EPARAMTYPE;
+  }
+  return SUCCESS;
 }
 
 // Skip optional parameters.

@@ -11,6 +11,7 @@ using std::string;
 class ReplIO {
   public:
     ReplIO(void);
+    ~ReplIO(void);
     size_t available(void);
     bool eol(void);
     void flush(void);

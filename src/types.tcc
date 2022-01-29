@@ -3,11 +3,13 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "tuple.tcc"
 
 using std::string;
 using std::istringstream;
+using std::vector;
 
 #define PARG_T class... Args
 #define PARG Tuple<Tuple<const char*, const char*>, Args...>
@@ -81,6 +83,12 @@ inline string typeof(string&) {
   return "string";
 }
 
+template <class T>
+string typeof(vector<T>&) {
+  T data;
+  return "vector<" + typeof(data) + ">";
+}
+
 
 /**
  * Convert a string to any type.
@@ -103,6 +111,15 @@ bool convert(T* data, string s) {
   iss >> *data;
 
   return !iss.fail();
+}
+
+template <class T>
+bool convert(vector<T>* data, string s) {
+  T value;
+  bool status = convert(&value, s);
+  data->push_back(value);
+
+  return status;
 }
 
 #endif

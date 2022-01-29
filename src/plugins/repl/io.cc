@@ -14,6 +14,12 @@ ReplIO::ReplIO(void) {
   fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 }
 
+/*!
+ */
+ReplIO::~ReplIO(void) {
+  free(_data);
+}
+
 /**
  *
  */
