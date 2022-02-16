@@ -11,6 +11,14 @@
 #define EXITHELP "Exit.\n"
 
 
+string _flagToString(bool value) {
+  if (value) {
+    return "enabled";
+  }
+  return "disabled";
+}
+
+
 /**
  * Help on required parameters.
  *
@@ -67,7 +75,7 @@ template <class I, class... Tail, class D>
 void helpOptional(I& io, void (*f)(bool, Tail...), D& defs) {
   print(
     io, "  ", defs.head.head, "\t\t", defs.head.tail.tail.head,
-    " (type flag)\n");
+    " (type flag, default: ", _flagToString(defs.head.tail.head), ")\n");
   helpOptional(io, (void (*)(Tail...))f, defs.tail);
 }
 
