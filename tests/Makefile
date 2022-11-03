@@ -7,7 +7,7 @@ FIXTURES := plugins/cli/io plugins/repl/io
 
 CC := g++
 INCLUDE := -I fixtures -I ../src
-CC_ARGS := -Wno-pmf-conversions -std=c++11
+CC_ARGS := -Wall -Wextra -pedantic
 
 
 OBJS := $(addsuffix .o, $(TESTS) $(FIXTURES) $(OBJS))

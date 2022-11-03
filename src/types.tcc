@@ -19,74 +19,74 @@ using std::vector;
  * Type naming functions.
  */
 
-inline string typeof(bool) {
+inline string typeOf(bool) {
   return "bool";
 }
 
-inline string typeof(char) {
+inline string typeOf(char) {
   return "char";
 }
 
-inline string typeof(signed char) {
+inline string typeOf(signed char) {
   return "signed char";
 }
 
-inline string typeof(unsigned char) {
+inline string typeOf(unsigned char) {
   return "unsigned char";
 }
 
-inline string typeof(short int) {
+inline string typeOf(short int) {
   return "short int";
 }
 
-inline string typeof(unsigned short int) {
+inline string typeOf(unsigned short int) {
   return "unsigned short int";
 }
 
-inline string typeof(int) {
+inline string typeOf(int) {
   return "int";
 }
 
-inline string typeof(unsigned int) {
+inline string typeOf(unsigned int) {
   return "unsigned int";
 }
 
-inline string typeof(long int) {
+inline string typeOf(long int) {
   return "long int";
 }
 
-inline string typeof(unsigned long int) {
+inline string typeOf(unsigned long int) {
   return "unsigned long int";
 }
 
-inline string typeof(long long int) {
+inline string typeOf(long long int) {
   return "long long int";
 }
 
-inline string typeof(unsigned long long int) {
+inline string typeOf(unsigned long long int) {
   return "unsigned long long int";
 }
 
-inline string typeof(float) {
+inline string typeOf(float) {
   return "float";
 }
 
-inline string typeof(double) {
+inline string typeOf(double) {
   return "double";
 }
 
-inline string typeof(long double) {
+inline string typeOf(long double) {
   return "long double";
 }
 
-inline string typeof(string&) {
+inline string typeOf(string&) {
   return "string";
 }
 
 template <class T>
-string typeof(vector<T>&) {
-  T data;
-  return "vector<" + typeof(data) + ">";
+string typeOf(vector<T>&) {
+  T data {};
+  return "vector<" + typeOf(data) + ">";
 }
 
 

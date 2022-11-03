@@ -35,19 +35,21 @@ void helpRequired(I&, void (*)(void), Tuple<>&) {}
 
 // Required parameter.
 template <class I, class H, class... Tail, PARG_T>
-void helpRequired(I& io, void (*f)(H, Tail...), PARG& defs) {
-  H data;
-
+void helpRequired(I& io, void (*)(H, Tail...), PARG& defs) {
+  H data {};
   print(
     io, "  ", defs.head.head, "\t\t", defs.head.tail.head, " (type ",
-    typeof(data), ")\n");
-  helpRequired(io, (void (*)(Tail...))f, defs.tail);
+    typeOf(data), ")\n");
+
+  void (*f_)(Tail...) {};
+  helpRequired(io, f_, defs.tail);
 }
 
 // Skip optional parameter.
 template <class I, class H, class... Tail, class D>
-void helpRequired(I& io, void (*f)(H, Tail...), D& defs) {
-  helpRequired(io, (void (*)(Tail...))f, defs.tail);
+void helpRequired(I& io, void (*)(H, Tail...), D& defs) {
+  void (*f_)(Tail...) {};
+  helpRequired(io, f_, defs.tail);
 }
 
 
@@ -66,28 +68,32 @@ void helpOptional(I&, void (*)(void), Tuple<>&) {}
 
 // Skip required parameter.
 template <class I, class H, class... Tail, PARG_T>
-void helpOptional(I& io, void (*f)(H, Tail...), PARG& defs) {
-  helpOptional(io, (void (*)(Tail...))f, defs.tail);
+void helpOptional(I& io, void (*)(H, Tail...), PARG& defs) {
+  void (*f_)(Tail...) {};
+  helpOptional(io, f_, defs.tail);
 }
 
 // Optional parameter of type `flag`.
 template <class I, class... Tail, class D>
-void helpOptional(I& io, void (*f)(bool, Tail...), D& defs) {
+void helpOptional(I& io, void (*)(bool, Tail...), D& defs) {
   print(
     io, "  ", defs.head.head, "\t\t", defs.head.tail.tail.head,
     " (type flag, default: ", _flagToString(defs.head.tail.head), ")\n");
-  helpOptional(io, (void (*)(Tail...))f, defs.tail);
+
+  void (*f_)(Tail...) {};
+  helpOptional(io, f_, defs.tail);
 }
 
 // Optional parameter.
 template <class I, class H, class... Tail, class D>
-void helpOptional(I& io, void (*f)(H, Tail...), D& defs) {
-  H data;
-
+void helpOptional(I& io, void (*)(H, Tail...), D& defs) {
+  H data {};
   print(
     io, "  ", defs.head.head, "\t\t", defs.head.tail.tail.head, " (type ",
-    typeof(data), ", default: ", defs.head.tail.head, ")\n");
-  helpOptional(io, (void (*)(Tail...))f, defs.tail);
+    typeOf(data), ", default: ", defs.head.tail.head, ")\n");
+
+  void (*f_)(Tail...) {};
+  helpOptional(io, f_, defs.tail);
 }
 
 
@@ -106,9 +112,8 @@ void returnType(I&, void (*)(FArgs...)) {}
 // Entry point.
 template <class I, class R, class... FArgs>
 void returnType(I& io, R (*)(FArgs...)) {
-  R data;
-
-  print(io, "\nreturns:\n  ", typeof(data), "\n");
+  R data {};
+  print(io, "\nreturns:\n  ", typeOf(data), "\n");
 }
 
 
@@ -134,12 +139,14 @@ void help(I& io, R (*f)(FArgs...), string name, string descr, D& defs) {
 
   if (req) {
     print(io, "\npositional arguments:\n");
-    helpRequired(io, (void (*)(FArgs...))f, defs);
+    void (*f_)(FArgs...) {};
+    helpRequired(io, f_, defs);
   }
 
   if (opt) {
     print(io, "\noptional arguments:\n");
-    helpOptional(io, (void (*)(FArgs...))f, defs);
+    void (*f_)(FArgs...) {};
+    helpOptional(io, f_, defs);
   }
 
   returnType(io, f);

@@ -17,7 +17,7 @@
  * \param opt Number optional parameters.
  * \param defs Parameter definitions.
  */
-inline void _countArgs(int& req, int& opt, Tuple<>&) {}
+inline void _countArgs(int&, int&, Tuple<>&) {}
 
 // Count required parameter.
 template <PARG_T>
@@ -77,7 +77,7 @@ void setDefault(A& argv, D& defs) {
  *
  * \return SUCCESS on success, an error code otherwise.
  */
-inline int _updateRequired(Tuple<>&, Tuple<>&, int, int, string& value) {
+inline int _updateRequired(Tuple<>&, Tuple<>&, int, int, string&) {
   return EEXCESSPARAM;
 }
 
@@ -96,7 +96,7 @@ int _updateRequired(A& argv, PARG& defs, int num, int count, string& value) {
 
 template <class T, PARG_T>
 int _updateRequired(
-    Tuple<vector<T>>& argv, PARG& defs, int, int, string& value) {
+    Tuple<vector<T>>& argv, PARG&, int, int, string& value) {
   if (!convert(&argv.head, value)) {
     return EPARAMTYPE;
   }
@@ -130,7 +130,7 @@ int updateRequired(A& argv, D& defs, int num, string& value) {
  * \return SUCCESS on success, an error code otherwise.
  */
 template <class I>
-int updateOptional(I&, Tuple<>&, Tuple<>&, string& name) {
+int updateOptional(I&, Tuple<>&, Tuple<>&, string&) {
   return EUNKNOWNPARAM;
 }
 

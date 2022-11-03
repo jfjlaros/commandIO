@@ -4,7 +4,7 @@ OBJS := ../../src/error ../../src/plugins/cli/io ../../src/plugins/repl/io
 
 CC := g++
 INCLUDE_PATH := ../../src
-CC_ARGS := -Wno-pmf-conversions -fpermissive -std=c++11 -I $(INCLUDE_PATH)
+CC_ARGS := -Wall -Wextra -pedantic -I $(INCLUDE_PATH)
 
 
 OBJS := $(addsuffix .o, $(OBJS))

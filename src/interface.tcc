@@ -8,8 +8,8 @@
 #include "eval.tcc"
 #include "help.tcc"
 
-#define param(args...) pack(args) ///< Container for parameter definition.
-#define func(args...) pack(args)  ///< Container for function definition.
+//#define param(args...) pack(args) ///< Container for parameter definition.
+//#define func(args...) pack(args)  ///< Container for function definition.
 
 
 /**

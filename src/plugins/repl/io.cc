@@ -24,7 +24,7 @@ ReplIO::~ReplIO(void) {
  *
  */
 void ReplIO::_store(int c) {
-  if (c || _index && _data[_index - 1]) {
+  if (c or (_index and _data[_index - 1])) {
     _data[_index] = (char)c;
     _index++;
   }
@@ -36,14 +36,14 @@ void ReplIO::_store(int c) {
  * @return `true` if a line ending was encountered, `false` otherwise.
  */
 bool ReplIO::eol(void) {
-  return !(_index || _offset);
+  return not (_index or _offset);
 }
 
 /**
  * Flush the input.
  */
 void ReplIO::flush(void) {
-  while (!eol()) {
+  while (not eol()) {
     read();
   }
 }
@@ -66,11 +66,11 @@ size_t ReplIO::available(void) {
         _escape = true;
         break;
       case '"':
-        _quoted = !_quoted;
+        _quoted = not _quoted;
         break;
       case ' ':
       case '\t':
-        if (!_quoted) {
+        if (not _quoted) {
           _store('\0');
         }
         else {
@@ -98,7 +98,7 @@ char* ReplIO::read(void) {
   size_t offset = _offset;
 
   while (_offset < _index - 1) {
-    if (!_data[_offset]) {
+    if (not _data[_offset]) {
       _offset++;
       return &_data[offset];
     }
