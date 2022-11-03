@@ -1,5 +1,4 @@
-#ifndef USERIO_CLIIO_H_
-#define USERIO_CLIIO_H_
+#pragma once
 
 #include <iostream>
 
@@ -22,5 +21,3 @@ class CliIO {
         _number = 0;
     char** _argv;
 };
-
-#endif

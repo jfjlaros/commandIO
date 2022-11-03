@@ -1,8 +1,4 @@
-#ifndef USERIO_TUPLE_TCC_
-#define USERIO_TUPLE_TCC_
-
-#define TMEMB_T class C, class R, class P, class... FArgs
-#define TMEMB Tuple<C*, R (P::*)(FArgs...)>
+#pragma once
 
 /**
  * Tuple.
@@ -51,5 +47,3 @@ template <class... Args>
 Tuple<Args...> func(Args... args) {
   return pack(args...);
 }
-
-#endif

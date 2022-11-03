@@ -1,17 +1,13 @@
-#ifndef USERIO_EVAL_TCC_
-#define USERIO_EVAL_TCC_
-
-/// \defgroup eval
+#pragma once
 
 #include <string>
 
 #include "error.h"
 #include "tuple.tcc"
 
-using std::string;
+/// \defgroup eval
 
-#define VMEMB_T class C, class P, class... FArgs
-#define VMEMB Tuple<C*, void (P::*)(FArgs...)>
+using std::string;
 
 
 /*
@@ -22,8 +18,9 @@ using std::string;
  */
 
 // Void class member function.
-template <class I, VMEMB_T, class... Args>
-void _call(I&, VMEMB& m, Tuple<>&, Args&... args) {
+template <class I, class C, class P, class... FArgs, class... Args>
+void _call(
+    I&, Tuple<C*, void (P::*)(FArgs...)>& m, Tuple<>&, Args&... args) {
   (*m.head.*m.tail.head)(args...);
 }
 
@@ -34,8 +31,9 @@ void _call(I&, void (*f)(FArgs...), Tuple<>&, Args&... args) {
 }
 
 // Class member function that returns a value.
-template <class I, TMEMB_T, class... Args>
-void _call(I& io, TMEMB& m, Tuple<>&, Args&... args) {
+template <class I, class C, class R, class P, class... FArgs, class... Args>
+void _call(
+    I& io, Tuple<C*, R (P::*)(FArgs...)>& m, Tuple<>&, Args&... args) {
   print(io, (*m.head.*m.tail.head)(args...), "\n");
 }
 
@@ -67,8 +65,8 @@ void _call(I& io, F f, A& argv, Args&... args) {
  *   function.
  * \param argv Tuple containing arguments.
  */
-template <class I, TMEMB_T, class A>
-void call(I& io, TMEMB& m, A& argv) {
+template <class I, class C, class R, class P, class... FArgs, class A>
+void call(I& io, Tuple<C*, R (P::*)(FArgs...)>& m, A& argv) {
   _call(io, m, argv);
 }
 
@@ -118,9 +116,9 @@ bool _parse(I& io, F f, A& argv, D& defs) {
       errorCode = updateOptional(io, argv, defs, token);
 
       switch (errorCode) {
-        case SUCCESS:
+        case success:
           continue;
-        case EUNKNOWNPARAM:
+        case eUnknownParam:
           break;
         default:
           print(io, errorMessage[errorCode], token, "\n");
@@ -131,7 +129,7 @@ bool _parse(I& io, F f, A& argv, D& defs) {
     errorCode = updateRequired(argv, defs, number, token);
 
     switch (errorCode) {
-      case SUCCESS:
+      case success:
         number++;
         continue;
       default:
@@ -164,8 +162,8 @@ bool _parse(I& io, F f, A& argv, D& defs) {
  *
  * \return `true` on success, `false` otherwise.
  */
-template <class I, TMEMB_T, class D>
-bool parse(I& io, TMEMB& m, D& defs) {
+template <class I, class C, class R, class P, class... FArgs, class D>
+bool parse(I& io, Tuple<C*, R (P::*)(FArgs...)>& m, D& defs) {
   Tuple<FArgs...> argv;
 
   return _parse(io, m, argv, defs);
@@ -219,5 +217,3 @@ bool select(I& io, string name, H t, Args... args) {
 
   return select(io, name, args...);
 }
-
-#endif

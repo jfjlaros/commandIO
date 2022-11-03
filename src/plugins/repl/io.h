@@ -1,5 +1,4 @@
-#ifndef USERIO_REPLIO_H_
-#define USERIO_REPLIO_H_
+#pragma once
 
 #include <iostream>
 
@@ -26,5 +25,3 @@ class ReplIO {
     bool _escape = false,
          _quoted = false;
 };
-
-#endif

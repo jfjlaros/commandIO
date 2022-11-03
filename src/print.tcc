@@ -1,5 +1,4 @@
-#ifndef USERIO_PRINT_TCC_
-#define USERIO_PRINT_TCC_
+#pragma once
 
 /**
  * Print functions.
@@ -60,5 +59,3 @@ void print(I& io, H data, Tail... args) {
   print(io, data);
   print(io, args...);
 }
-
-#endif

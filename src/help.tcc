@@ -1,5 +1,4 @@
-#ifndef USERIO_HELP_TCC_
-#define USERIO_HELP_TCC_
+#pragma once
 
 /// \defgroup help
 
@@ -7,8 +6,8 @@
 #include "print.tcc"
 #include "types.tcc"
 
-#define HELPHELP "Help on a specific command.\n"
-#define EXITHELP "Exit.\n"
+char const helpHelp[] {"Help on a specific command.\n"};
+char const exitHelp[] {"Exit.\n"};
 
 
 string _flagToString(bool value) {
@@ -34,8 +33,10 @@ template <class I>
 void helpRequired(I&, void (*)(void), Tuple<>&) {}
 
 // Required parameter.
-template <class I, class H, class... Tail, PARG_T>
-void helpRequired(I& io, void (*)(H, Tail...), PARG& defs) {
+template <class I, class H, class... Tail, class... Args>
+void helpRequired(
+    I& io, void (*)(H, Tail...),
+    Tuple<Tuple<const char*, const char*>, Args...>& defs) {
   H data {};
   print(
     io, "  ", defs.head.head, "\t\t", defs.head.tail.head, " (type ",
@@ -67,8 +68,10 @@ template <class I>
 void helpOptional(I&, void (*)(void), Tuple<>&) {}
 
 // Skip required parameter.
-template <class I, class H, class... Tail, PARG_T>
-void helpOptional(I& io, void (*)(H, Tail...), PARG& defs) {
+template <class I, class H, class... Tail, class... Args>
+void helpOptional(
+    I& io, void (*)(H, Tail...),
+    Tuple<Tuple<const char*, const char*>, Args...>& defs) {
   void (*f_)(Tail...) {};
   helpOptional(io, f_, defs.tail);
 }
@@ -164,8 +167,10 @@ void help(I& io, R (*f)(FArgs...), string name, string descr, D& defs) {
  * \param descr Command description.
  * \param defs Parameter definitions.
  */
-template <class I, TMEMB_T, class D>
-void help(I& io, TMEMB m, string name, string descr, D& defs) {
+template <class I, class C, class R, class P, class... FArgs, class D>
+void help(
+    I& io, Tuple<C*, R (P::*)(FArgs...)> m,
+    string name, string descr, D& defs) {
   help(io, (R (*)(FArgs...))m.tail.head, name, descr, defs);
 }
 
@@ -189,11 +194,11 @@ bool selectHelp(I& io, string name) {
 
   if (name == "help") {
     print(
-      io, name, ": ", HELPHELP, "\npositional arguments:\n",
+      io, name, ": ", helpHelp, "\npositional arguments:\n",
       "  name\t\tcommand name (type string)\n");
   }
   else if (io.interactive && name == "exit") {
-    print(io, name, ": ", EXITHELP);
+    print(io, name, ": ", exitHelp);
   }
   else {
     print(io, "Unknown command: ", name, "\n");
@@ -228,9 +233,9 @@ bool selectHelp(I& io, string name, H t, Tail... args) {
  */
 template <class I>
 void _describe(I& io) {
-  print(io, "  help\t\t", HELPHELP);
+  print(io, "  help\t\t", helpHelp);
   if (io.interactive) {
-    print(io, "  exit\t\t", EXITHELP);
+    print(io, "  exit\t\t", exitHelp);
   }
   io.flush();
 }
@@ -248,5 +253,3 @@ void describe(I& io, Args... args) {
   print(io, "Available commands:\n");
   _describe(io, args...);
 }
-
-#endif

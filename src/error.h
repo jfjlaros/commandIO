@@ -1,12 +1,9 @@
-#ifndef USERIO_ERROR_H_
-#define USERIO_ERROR_H_
+#pragma once
 
-#define SUCCESS 0
-#define EEXCESSPARAM 1
-#define EMISSINGVALUE 2
-#define EPARAMTYPE 3
-#define EUNKNOWNPARAM 4
+uint8_t const success {0};
+uint8_t const eExcessParam {1};
+uint8_t const eMissingValue {2};
+uint8_t const eParamType {3};
+uint8_t const eUnknownParam {4};
 
 extern const char* errorMessage[];
-
-#endif

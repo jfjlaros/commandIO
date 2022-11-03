@@ -1,5 +1,4 @@
-#ifndef USERIO_TYPES_TCC_
-#define USERIO_TYPES_TCC_
+#pragma once
 
 #include <sstream>
 #include <string>
@@ -10,9 +9,6 @@
 using std::string;
 using std::istringstream;
 using std::vector;
-
-#define PARG_T class... Args
-#define PARG Tuple<Tuple<const char*, const char*>, Args...>
 
 
 /*
@@ -121,5 +117,3 @@ bool convert(vector<T>* data, string s) {
 
   return status;
 }
-
-#endif

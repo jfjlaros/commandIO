@@ -1,5 +1,4 @@
-#ifndef USERIO_INTERFACE_TCC_
-#define USERIO_INTERFACE_TCC_
+#pragma once
 
 /// \defgroup interface
 
@@ -7,9 +6,6 @@
 
 #include "eval.tcc"
 #include "help.tcc"
-
-//#define param(args...) pack(args) ///< Container for parameter definition.
-//#define func(args...) pack(args)  ///< Container for function definition.
 
 
 /**
@@ -77,5 +73,3 @@ bool commandInterface(I& io, Args... args) {
 
   return true;
 }
-
-#endif

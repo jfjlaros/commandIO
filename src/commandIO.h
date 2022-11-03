@@ -1,5 +1,4 @@
-#ifndef USERIO_H_
-#define USERIO_H_
+#pragma once
 
 /**
  * \file commandIO.h
@@ -45,5 +44,3 @@ template <class H, class... Tail, class... Args>
 bool interface(Tuple<H, Tail...> t, Args... args) {
   return commandInterface(*t.head, args...) && interface(t.tail, args...);
 }
-
-#endif
