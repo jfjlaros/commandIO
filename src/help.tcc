@@ -30,7 +30,7 @@ string _flagToString(bool value) {
  * \param defs Parameter definitions.
  */
 template <class I>
-void helpRequired(I&, void (*)(void), Tuple<>&) {}
+void helpRequired(I&, void (*)(void), Empty) {}
 
 // Required parameter.
 template <class I, class H, class... Tail, class... Args>
@@ -65,7 +65,7 @@ void helpRequired(I& io, void (*)(H, Tail...), D& defs) {
  * \param defs Parameter definitions.
  */
 template <class I>
-void helpOptional(I&, void (*)(void), Tuple<>&) {}
+void helpOptional(I&, void (*)(void), Empty) {}
 
 // Skip required parameter.
 template <class I, class H, class... Tail, class... Args>
@@ -133,11 +133,10 @@ void returnType(I& io, R (*)(FArgs...)) {
  */
 template <class I, class R, class... FArgs, class D>
 void help(I& io, R (*f)(FArgs...), string name, string descr, D& defs) {
-  int req,
-      opt;
-
   print(io, name, ": ", descr, "\n");
 
+  int req;
+  int opt;
   countArgs(req, opt, defs);
 
   if (req) {
@@ -169,9 +168,10 @@ void help(I& io, R (*f)(FArgs...), string name, string descr, D& defs) {
  */
 template <class I, class C, class R, class P, class... FArgs, class D>
 void help(
-    I& io, Tuple<C*, R (P::*)(FArgs...)> m,
+    I& io, Tuple<C*, R (P::*)(FArgs...)>,
     string name, string descr, D& defs) {
-  help(io, (R (*)(FArgs...))m.tail.head, name, descr, defs);
+    R (*f_)(FArgs...) {};
+  help(io, f_, name, descr, defs);
 }
 
 
@@ -190,7 +190,7 @@ void help(
  */
 template <class I>
 bool selectHelp(I& io, string name) {
-  bool result = true;
+  bool result {true};
 
   if (name == "help") {
     print(

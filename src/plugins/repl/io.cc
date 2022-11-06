@@ -5,117 +5,91 @@
 using std::cout;
 
 
-/**
- *
- */
-ReplIO::ReplIO(void) {
-  int fd = fileno(stdin);
-
+ReplIO::ReplIO() {
+  int fd {fileno(stdin)};
   fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
 }
 
-/*!
- */
-ReplIO::~ReplIO(void) {
-  free(_data);
+ReplIO::~ReplIO() {
+  delete[] data_;
 }
 
-/**
- *
- */
-void ReplIO::_store(int c) {
-  if (c or (_index and _data[_index - 1])) {
-    _data[_index] = (char)c;
-    _index++;
-  }
-}
 
-/**
- * Check whether a line ending was encountered.
- *
- * @return `true` if a line ending was encountered, `false` otherwise.
- */
-bool ReplIO::eol(void) {
-  return not (_index or _offset);
-}
-
-/**
- * Flush the input.
- */
-void ReplIO::flush(void) {
-  while (not eol()) {
-    read();
-  }
-}
-
-/**
- *
- */
-size_t ReplIO::available(void) {
-  int c = getc(stdin);
+size_t ReplIO::available() {
+  int c {getc(stdin)};
 
   if (c != -1) {
-    if (_escape) {
-      _store(c);
-      _escape = false;
+    if (escape_) {
+      store_(c);
+      escape_ = false;
       return 0;
     }
 
     switch (c) {
       case '\\':
-        _escape = true;
+        escape_ = true;
         break;
       case '"':
-        _quoted = not _quoted;
+        quoted_ = not quoted_;
         break;
       case ' ':
       case '\t':
-        if (not _quoted) {
-          _store('\0');
+        if (not quoted_) {
+          store_('\0');
         }
         else {
-          _store(c);
+          store_(c);
         }
         break;
       case '\n':
-        _store('\0');
-        _escape = false;
-        _quoted = false;
+        store_('\0');
+        escape_ = false;
+        quoted_ = false;
 
-        return _index;
+        return index_;
       default:
-        _store(c);
+        store_(c);
     }
   }
 
   return 0;
 }
 
-/**
- *
- */
-char* ReplIO::read(void) {
-  size_t offset = _offset;
-
-  while (_offset < _index - 1) {
-    if (not _data[_offset]) {
-      _offset++;
-      return &_data[offset];
-    }
-    _offset++;
-  }
-
-  _index = 0;
-  _offset = 0;
-
-  return &_data[offset];
+bool ReplIO::eol() const {
+  return not (index_ or offset_);
 }
 
-/**
- * Write one string.
- *
- * @param data String.
- */
-void ReplIO::write(string& data) {
+void ReplIO::flush() {
+  while (not eol()) {
+    read();
+  }
+}
+
+char* ReplIO::read() {
+  size_t offset {offset_};
+
+  while (offset_ < index_ - 1) {
+    if (not data_[offset_]) {
+      offset_++;
+      return &data_[offset];
+    }
+    offset_++;
+  }
+
+  index_ = 0;
+  offset_ = 0;
+
+  return &data_[offset];
+}
+
+void ReplIO::write(string const& data) const {
   cout << data;
+}
+
+
+void ReplIO::store_(int c) {
+  if (c or (index_ and data_[index_ - 1])) {
+    data_[index_] = (char)c;
+    index_++;
+  }
 }

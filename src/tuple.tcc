@@ -1,21 +1,24 @@
 #pragma once
 
-/**
- * Tuple.
+/*! Tuple.
  *
- * \struct Tuple
+ * \tparam Membs... 
  */
 template <class... Membs>
 struct Tuple {};
 
+using Empty = Tuple<>&;
+using EmptyC = Tuple<> const&;
+
 // Full definition.
 template <class H, class... Tail>
 struct Tuple<H, Tail...> {
-  H head;              ///< First element.
-  Tuple<Tail...> tail; ///< Remaining elements.
+  H head;               //< First element.
+  Tuple<Tail...> tail;  //< Remaining elements.
 };
 
-inline void fill(Tuple<>) {}
+
+inline void fill(Empty) {}
 
 template <class H, class... Tail>
 void fill(Tuple<H, Tail...>& t, H head, Tail... tail) {

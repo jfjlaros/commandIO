@@ -106,13 +106,13 @@ bool convert(T* data, string s) {
 
   iss >> *data;
 
-  return !iss.fail();
+  return not iss.fail();
 }
 
 template <class T>
 bool convert(vector<T>* data, string s) {
   T value;
-  bool status = convert(&value, s);
+  bool status {convert(&value, s)};
   data->push_back(value);
 
   return status;

@@ -1,4 +1,4 @@
-const char* errorMessage[] = {
+const char* errorMessage[] {
   "",
   "Excess parameter: ",
   "Missing value for parameter ",

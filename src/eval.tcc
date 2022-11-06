@@ -9,37 +9,46 @@
 
 using std::string;
 
+template <class C, class P, class... Args>
+using VoidM = Tuple<C*, void (P::*)(Args...)> const&;
+
+template <class C, class R, class P, class... Args>
+using RetM = Tuple<C*, R (P::*)(Args...)> const&;
+
+template <class... Args>
+using VoidF = void (* const)(Args...);
+
+template <class R, class... Args>
+using RetF = R (* const)(Args...);
 
 /*
  * Recursion terminators.
  *
- * All parameters have been collected. All values are now present in the `args`
- * parameter pack.
+ * All parameters have been collected. All values are now present in the
+ * `args` parameter pack.
  */
 
 // Void class member function.
 template <class I, class C, class P, class... FArgs, class... Args>
-void _call(
-    I&, Tuple<C*, void (P::*)(FArgs...)>& m, Tuple<>&, Args&... args) {
+void call_(I&, VoidM<C, P, FArgs...> m, Empty, Args&... args) {
   (*m.head.*m.tail.head)(args...);
 }
 
 // Void function.
 template <class I, class... FArgs, class... Args>
-void _call(I&, void (*f)(FArgs...), Tuple<>&, Args&... args) {
+void call_(I&, VoidF<FArgs...> f, Empty, Args&... args) {
   f(args...);
 }
 
 // Class member function that returns a value.
 template <class I, class C, class R, class P, class... FArgs, class... Args>
-void _call(
-    I& io, Tuple<C*, R (P::*)(FArgs...)>& m, Tuple<>&, Args&... args) {
+void call_(I& io, RetM<C, R, P, FArgs...> m, Empty, Args&... args) {
   print(io, (*m.head.*m.tail.head)(args...), "\n");
 }
 
 // Function that returns a value.
 template <class I, class F, class... Args>
-void _call(I& io, F f, Tuple<>&, Args&... args) {
+void call_(I& io, F f, Empty, Args&... args) {
   print(io, f(args...), "\n");
 }
 
@@ -47,16 +56,16 @@ void _call(I& io, F f, Tuple<>&, Args&... args) {
 /*
  * Parameter collection.
  *
- * The first member of the tuple `argv` is added to the parameter pack `args`.
+ * The first member of the tuple `argv` is added to the parameter pack
+ * `args`.
  */
 template <class I, class F, class A, class... Args>
-void _call(I& io, F f, A& argv, Args&... args) {
-  _call(io, f, argv.tail, args..., argv.head);
+void call_(I& io, F f, A& argv, Args&... args) {
+  call_(io, f, argv.tail, args..., argv.head);
 }
 
 
-/**
- * Call a class member function.
+/*! Call a class member function.
  *
  * \ingroup eval
  *
@@ -66,12 +75,11 @@ void _call(I& io, F f, A& argv, Args&... args) {
  * \param argv Tuple containing arguments.
  */
 template <class I, class C, class R, class P, class... FArgs, class A>
-void call(I& io, Tuple<C*, R (P::*)(FArgs...)>& m, A& argv) {
-  _call(io, m, argv);
+void call(I& io, RetM<C, R, P, FArgs...> m, A& argv) {
+  call_(io, m, argv);
 }
 
-/**
- * Call a function.
+/*! Call a function.
  *
  * \ingroup eval
  *
@@ -81,12 +89,11 @@ void call(I& io, Tuple<C*, R (P::*)(FArgs...)>& m, A& argv) {
  */
 template <class I, class F, class A>
 void call(I& io, F f, A& argv) {
-  _call(io, f, argv);
+  call_(io, f, argv);
 }
 
 
-/**
- * Set defaults, collect parameters, do sanity checking and call a function.
+/*! Set defaults, collect parameters, do sanity checking and call a function.
  *
  * \param io Input / output object.
  * \param f Function pointer or Tuple for class member functions.
@@ -96,17 +103,14 @@ void call(I& io, F f, A& argv) {
  * \return `true` on success, `false` otherwise.
  */
 template <class I, class F, class A, class D>
-bool _parse(I& io, F f, A& argv, D& defs) {
-  string token = "";
-  int errorCode,
-      opt,
-      req,
-      number = 0;
+bool parse_(I& io, F f, A& argv, D& defs) {
+  int number {0};
 
   setDefault(argv, defs);
 
-  while (!io.eol()) {
-    token = io.read();
+  while (not io.eol()) {
+    int errorCode;
+    string token {io.read()};
 
     if (token[0] == '-') {
       if (token == "-h" || token == "--help") {
@@ -138,6 +142,8 @@ bool _parse(I& io, F f, A& argv, D& defs) {
     }
   }
 
+  int opt;
+  int req;
   countArgs(req, opt, defs);
 
   if (number < req) {
@@ -150,8 +156,7 @@ bool _parse(I& io, F f, A& argv, D& defs) {
   return true;
 }
 
-/**
- * Parse user input and call a class member function.
+/*! Parse user input and call a class member function.
  *
  * \ingroup eval
  *
@@ -163,14 +168,12 @@ bool _parse(I& io, F f, A& argv, D& defs) {
  * \return `true` on success, `false` otherwise.
  */
 template <class I, class C, class R, class P, class... FArgs, class D>
-bool parse(I& io, Tuple<C*, R (P::*)(FArgs...)>& m, D& defs) {
+bool parse(I& io, RetM<C, R, P, FArgs...> m, D& defs) {
   Tuple<FArgs...> argv;
-
-  return _parse(io, m, argv, defs);
+  return parse_(io, m, argv, defs);
 }
 
-/**
- * Parse user input and call a function.
+/*! Parse user input and call a function.
  *
  * \ingroup eval
  *
@@ -181,15 +184,13 @@ bool parse(I& io, Tuple<C*, R (P::*)(FArgs...)>& m, D& defs) {
  * \return `true` on success, `false` otherwise.
  */
 template <class I, class R, class... FArgs, class D>
-bool parse(I& io, R (*f)(FArgs...), D& defs) {
+bool parse(I& io, RetF<R, FArgs...> f, D& defs) {
   Tuple<FArgs...> argv;
-
-  return _parse(io, f, argv, defs);
+  return parse_(io, f, argv, defs);
 }
 
 
-/**
- * Select a function for parsing.
+/*! Select a function for parsing.
  *
  * \fn select(string, H, Args...)
  * \ingroup eval
@@ -214,6 +215,5 @@ bool select(I& io, string name, H t, Args... args) {
   if (t.tail.head == name) {
     return parse(io, t.head, t.tail.tail.tail);
   }
-
   return select(io, name, args...);
 }

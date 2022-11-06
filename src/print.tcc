@@ -18,8 +18,7 @@ using std::to_string;
  */
 template <class I>
 void print(I& io, const char* data) {
-  string s = data;
-
+  string s {data};
   io.write(s);
 }
 
@@ -42,8 +41,7 @@ void print(I& io, string& data) {
  */
 template <class I, class T>
 void print(I& io, T data) {
-  string s = to_string(data);
-
+  string s {to_string(data)};
   io.write(s);
 }
 

@@ -23,9 +23,9 @@
  */
 template <class I, class F, class T, class... Args>
 bool commandInterface(I& io, F f, T name, const char* descr, Args... defs) {
-  Tuple<Args...> t = pack(defs...);
+  Tuple<Args...> t {pack(defs...)};
 
-  if (!parse(io, f, t)) {
+  if (not parse(io, f, t)) {
     help(io, f, name, descr, t);
   }
 
@@ -42,7 +42,7 @@ bool commandInterface(I& io, F f, T name, const char* descr, Args... defs) {
  */
 template <class I, class... Args>
 bool commandInterface(I& io, Args... args) {
-  static bool prompt = true;
+  static bool prompt {true};
   string command;
 
   if (io.interactive and prompt) {
@@ -58,13 +58,13 @@ bool commandInterface(I& io, Args... args) {
       return false;
     }
     if (command == "help") {
-      if (io.eol() || !selectHelp(io, io.read(), args...)) {
+      if (io.eol() or not selectHelp(io, io.read(), args...)) {
         describe(io, args...);
       }
       return true;
     }
 
-    if (!select(io, command, args...)) {
+    if (not select(io, command, args...)) {
       describe(io, args...);
     }
   }
